@@ -3,3 +3,5 @@ djangorestframework
 Celery
 celery-progress
 django-celery-results
+djoser
+django-cors-headers
