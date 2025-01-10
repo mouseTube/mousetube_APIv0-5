@@ -97,7 +97,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mousetube_v0_5',
         'USER': 'mousetubev05_webapp',
-        'PASSWORD': 'moutubeAccess',
+        'PASSWORD': 'xxxxxxxxxxxx',
         'HOST': '127.0.0.1',
         'PORT': '3307',
         'OPTIONS': {'ssl': True},
