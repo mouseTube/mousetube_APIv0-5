@@ -91,13 +91,12 @@ class Experiment(models.Model):
 
 
 class File(models.Model):
-    file_name = models.CharField(max_length=255, blank=True, null=True)
-    file_number = models.IntegerField(blank=True, null=True)
-    link_file = models.URLField(blank=True, null=True)
-    doi_file = models.CharField(max_length=255, blank=True, null=True)
-    note_file = models.TextField(blank=True, null=True)
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, blank=True, null=True)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, blank=True, null=True)
+    file_number = models.IntegerField(blank=True, null=True)
+    link_file = models.URLField(blank=True, null=True)
+    notes_file = models.TextField(blank=True, null=True)
+    doi_file = models.CharField(max_length=255, blank=True, null=True)
 
 
     def __str__(self):
