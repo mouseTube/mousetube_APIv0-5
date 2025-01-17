@@ -25,6 +25,7 @@ class StrainSerializer(serializers.ModelSerializer):
 
 class SubjectSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    strain_subject = StrainSerializer(read_only=True)
     class Meta:
         model = Subject
         fields = '__all__'
