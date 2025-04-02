@@ -30,6 +30,15 @@ env_paths = [
     environ.Path("/etc/moustube/mousetube.env"),
 ]
 
+# Read all environment files
+for e in env_paths:
+    try:
+        e.file("")
+        env.read_env(e())
+    except FileNotFoundError:
+        pass
+
+
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])
 SECRET_KEY = env("SECRET_KEY", default=get_random_secret_key())
 DEBUG = env("DEBUG", default=False)
@@ -87,7 +96,6 @@ WSGI_APPLICATION = 'mousetube_API.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
