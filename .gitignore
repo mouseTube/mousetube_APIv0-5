@@ -1,0 +1,10 @@
+# Environments
+.env
+*.env
+.venv
+env/
+venv
+
+__pycache__/
+*.py[cod]
+*$py.class

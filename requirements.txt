@@ -1,7 +1,9 @@
-Django
-djangorestframework
-Celery
-celery-progress
-django-celery-results
-djoser
-django-cors-headers
+Django==5.1.7
+djangorestframework==3.16.0
+Celery==5.5.0
+celery-progress==0.5
+django-celery-results==2.5.1
+djoser==2.3.1
+django-cors-headers==4..7.0
+mysqlclient==2.2.7
+django-environ==0.12.0

@@ -13,27 +13,26 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 
+import environ
+from django.core.management.utils import get_random_secret_key
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False),
+)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--!rcob75%pb&*uwc-_h6z6t68drlx40$-ujpxca#)c(c*io*#e'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
-
-CORS_ALLOWED_ORIGIN = [
-    'http://localhost:8080',
-    'http://127.0.0.1:8080',
-    'http://127.0.0.1:8000',
-    'http://192.168.0.39:8080',
+env_paths = [
+    environ.Path(Path.joinpath(BASE_DIR, ".env")),
+    environ.Path("/etc/moustube/mousetube.env"),
 ]
+
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])
+SECRET_KEY = env("SECRET_KEY", default=get_random_secret_key())
+DEBUG = env("DEBUG", default=False)
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -92,15 +91,13 @@ WSGI_APPLICATION = 'mousetube_API.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mousetube_v0_5',
-        'USER': 'mousetubev05_webapp',
-        'PASSWORD': 'xxxxxxxxxxxx',
-        'HOST': '127.0.0.1',
-        'PORT': '3307',
-        'OPTIONS': {'ssl': True},
+        'ENGINE': env("DB_ENGINE", default="django.db.backends.mysql"),
+        'NAME': env("DB_NAME", default=""),
+        'USER': env("DB_USER", default=""),
+        'PASSWORD': env("DB_PASSWORD", default=""),
+        'HOST': env("DB_HOST", default="127.0.0.1"),
+        'PORT': env("DB_PORT", default="3306"),
+        'OPTIONS': {'ssl': env.bool("DB_SSL", default=False)},
     }
 }
 
