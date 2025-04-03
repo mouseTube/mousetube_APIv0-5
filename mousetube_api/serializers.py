@@ -8,7 +8,7 @@ Code under GPL v3.0 licence
 '''
 
 from rest_framework import serializers
-from mousetube_API.models import *
+from mousetube_api.models import *
 
 
 class UserSerializer(serializers.ModelSerializer):
