@@ -38,7 +38,6 @@ class Command(BaseCommand):
                 logger.error(f"BROKEN: {url}")
                 if not f.is_dead_link:
                     f.is_dead_link = True
-                    f.notes_file = (f.notes_file or "") + "\nLien mort détecté"
                     f.save()
 
         logger.info("Dead link check finished.")
