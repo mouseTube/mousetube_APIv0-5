@@ -13,7 +13,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-class MousetubeUser(models.Model):
+class MousetubeUser(AbstractUser):
     name_user = models.CharField(max_length=255)
     first_name_user = models.CharField(max_length=255)
     email_user = models.CharField(max_length=255)
