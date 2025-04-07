@@ -10,8 +10,10 @@ Code under GPL v3.0 licence
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import AbstractUser
+from django.db import models
 
-class User(models.Model):
+class MousetubeUser(models.Model):
     name_user = models.CharField(max_length=255)
     first_name_user = models.CharField(max_length=255)
     email_user = models.CharField(max_length=255)
@@ -44,7 +46,7 @@ class Subject(models.Model):
     group_subject = models.CharField(max_length=255, blank=True, null=True)
     genotype_subject = models.CharField(max_length=255, blank=True, null=True)
     treatment = models.CharField(max_length=255, blank=True, null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(MousetubeUser, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name_subject
@@ -58,7 +60,7 @@ class Protocol(models.Model):
     name_protocol = models.CharField(max_length=255)
     number_files = models.IntegerField(blank=True, null=True)
     protocol_description = models.TextField(default='')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(MousetubeUser, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name_protocol
@@ -97,6 +99,7 @@ class File(models.Model):
     link_file = models.URLField(blank=True, null=True)
     notes_file = models.TextField(blank=True, null=True)
     doi_file = models.CharField(max_length=255, blank=True, null=True)
+    is_dead_link = models.BooleanField(default=False)
 
 
     def __str__(self):

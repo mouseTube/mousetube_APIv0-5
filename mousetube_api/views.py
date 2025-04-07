@@ -15,7 +15,7 @@ from .models import *
 
 class UserAPIView(APIView):
     def get(self, *arg, **kwargs):
-        user = User.objects.all()
+        user = MousetubeUser.objects.all()
         serializer = UserSerializer(user, many=True)
         return Response(serializer.data)
 
