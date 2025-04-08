@@ -22,7 +22,7 @@ class FilePagination(PageNumberPagination):
 
 class UserAPIView(APIView):
     def get(self, *arg, **kwargs):
-        user = MousetubeUser.objects.all()
+        user = User.objects.all()
         serializer = UserSerializer(user, many=True)
         return Response(serializer.data)
 
