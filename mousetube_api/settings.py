@@ -40,12 +40,11 @@ for e in env_paths:
 
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])
-SECRET_KEY = env("SECRET_KEY", default=get_random_secret_key())
+SECRET_KEY = env("SECRET_KEY") if env("SECRET_KEY", default=None) else get_random_secret_key()
 DEBUG = env("DEBUG", default=False)
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-AUTH_USER_MODEL = 'mousetube_api.MousetubeUser'
 
 # Application definition
 

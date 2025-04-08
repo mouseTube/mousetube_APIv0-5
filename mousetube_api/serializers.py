@@ -13,7 +13,7 @@ from mousetube_api.models import *
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MousetubeUser
+        model = User
         fields = '__all__'
 
 
