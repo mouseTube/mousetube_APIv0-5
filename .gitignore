@@ -8,3 +8,9 @@ venv
 __pycache__/
 *.py[cod]
 *$py.class
+
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
