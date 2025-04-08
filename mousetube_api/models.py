@@ -99,6 +99,7 @@ class File(models.Model):
     link_file = models.URLField(blank=True, null=True)
     notes_file = models.TextField(blank=True, null=True)
     doi_file = models.CharField(max_length=255, blank=True, null=True)
+    is_valid_link = models.BooleanField(default=False)
 
 
     def __str__(self):
