@@ -49,14 +49,14 @@ class Command(BaseCommand):
             # If the link is alive
             if link_alive:
                 logger.info(f"OK: {url} {response.status_code}")
-                if file.is_valid_link:
-                    file.is_valid_link = False
+                if not file.is_valid_link:
+                    file.is_valid_link = True
                     file.save()
             else:
                 # If the link is dead
                 logger.error(f"BROKEN: {url} {response.status_code}")
-                if not file.is_valid_link:
-                    file.is_valid_link = True
+                if file.is_valid_link:
+                    file.is_valid_link = False
                     file.save()
 
         files = File.objects.exclude(link_file__isnull=True).exclude(link_file="")
