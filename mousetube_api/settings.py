@@ -40,10 +40,11 @@ for e in env_paths:
 
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])
-SECRET_KEY = env("SECRET_KEY", default=get_random_secret_key())
+SECRET_KEY = env("SECRET_KEY") if env("SECRET_KEY", default=None) else get_random_secret_key()
 DEBUG = env("DEBUG", default=False)
 
 CORS_ORIGIN_ALLOW_ALL = True
+
 
 # Application definition
 
@@ -178,3 +179,47 @@ CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
 # To upload
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+LOG_DIR = Path(BASE_DIR) / "logs"
+LOG_DIR.mkdir(exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'dead_links_info_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'dead_links_info.log'),
+            'formatter': 'verbose',
+        },
+        'dead_links_error_file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'dead_links_error.log'),
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'check_dead_links': {
+            'handlers': ['dead_links_info_file', 'dead_links_error_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}

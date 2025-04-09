@@ -14,3 +14,12 @@ __pycache__/
 dist/
 build/
 .eggs/
+
+*.json
+migrations/
+
+logs/
+*.log
+*.sqlite3
+*.db
+*.db-journal

@@ -10,6 +10,8 @@ Code under GPL v3.0 licence
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 class User(models.Model):
     name_user = models.CharField(max_length=255)
@@ -97,6 +99,7 @@ class File(models.Model):
     link_file = models.URLField(blank=True, null=True)
     notes_file = models.TextField(blank=True, null=True)
     doi_file = models.CharField(max_length=255, blank=True, null=True)
+    is_valid_link = models.BooleanField(default=False)
 
 
     def __str__(self):
