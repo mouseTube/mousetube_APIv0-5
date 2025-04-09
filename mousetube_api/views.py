@@ -58,6 +58,7 @@ class ExperimentAPIView(APIView):
 class FileAPIView(APIView):
     def get(self, request, *args, **kwargs):
         search_query = request.GET.get('search', '')
+        filter_query = request.GET.get('filter', '')
         files = File.objects.all()
         if search_query:
             file_fields = [
@@ -127,6 +128,17 @@ class FileAPIView(APIView):
             files = files.filter(
                 file_query | experiment_query | subject_query | user_query | strain_query | protocol_query
             )
+
+        ALLOWED_FILTERS = ["is_valid_link"]
+
+        # Apply filters
+        if filter_query:
+            for filter_name in filter_query.split(','):
+                if filter_name not in ALLOWED_FILTERS:
+                    continue  # Ignore invalid filters
+
+                if filter_name == "is_valid_link":                    
+                    files = files.filter(is_valid_link=True)
         
         # Add explicit ordering to avoid UnorderedObjectListWarning
         files = files.order_by('link_file')
