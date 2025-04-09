@@ -180,6 +180,9 @@ CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
+LOG_DIR = Path(BASE_DIR) / "logs"
+LOG_DIR.mkdir(exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
