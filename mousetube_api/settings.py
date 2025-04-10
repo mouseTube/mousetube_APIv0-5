@@ -60,8 +60,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'djoser',
-    'django_celery_results',
-    'celery_progress',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -157,6 +156,7 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -167,14 +167,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
 }
-
-broker_url = 'amqp://guest:guest@localhost:5672//'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_TIMEZONE = "Europe/Paris"
-CELERY_IMPORTS = 'mousetube_api.tasks'
-CELERY_RESULT_BACKEND = 'django-db'
-CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
 
 # To upload
 MEDIA_URL = '/media/'
