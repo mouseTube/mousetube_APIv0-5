@@ -23,37 +23,44 @@ class FilePagination(PageNumberPagination):
     max_page_size = 100
 
 class UserAPIView(APIView):
+    serializer_class = UserSerializer
+
     def get(self, *arg, **kwargs):
         user = User.objects.all()
-        serializer = UserSerializer(user, many=True)
+        serializer = self.serializer_class(user, many=True)
         return Response(serializer.data)
 
 
 class StrainAPIView(APIView):
+    serializer_class = StrainSerializer
+
     def get(self, *arg, **kwargs):
         strain = Strain.objects.all()
-        serializers = StrainSerializer(strain, many=True)
+        serializers = self.serializer_class(strain, many=True)
         return Response(serializers.data)
 
 
 class SubjectAPIView(APIView):
+    serializer_class = SubjectSerializer
     def get(self, *arg, **kwargs):
         subject = Subject.objects.all()
-        serializers = SubjectSerializer(subject, many=True)
+        serializers = self.serializer_class(subject, many=True)
         return Response(serializers.data)
 
 
 class ProtocolAPIView(APIView):
+    serializer_class = ProtocolSerializer
     def get(self, *arg, **kwargs):
         protocol = Protocol.objects.all()
-        serializers = ProtocolSerializer(protocol, many=True)
+        serializers = self.serializer_class(protocol, many=True)
         return Response(serializers.data)
 
 
 class ExperimentAPIView(APIView):
+    serializer_class = ExperimentSerializer
     def get(self, *arg, **kwargs):
         experiment = Experiment.objects.all()
-        serializers = ExperimentSerializer(experiment, many=True)
+        serializers = self.serializer_class(experiment, many=True)
         return Response(serializers.data)
 
 
