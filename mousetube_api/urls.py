@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import *
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 router = DefaultRouter()
 
@@ -30,4 +31,6 @@ urlpatterns = [
     path('api/protocol/', ProtocolAPIView.as_view()),
     path('api/experiment/', ExperimentAPIView.as_view()),
     path('api/file/', FileAPIView.as_view()),
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]
