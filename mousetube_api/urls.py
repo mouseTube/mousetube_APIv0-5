@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import *
+from .views import TrackPageView
 
 router = DefaultRouter()
 
@@ -30,4 +31,5 @@ urlpatterns = [
     path('api/protocol/', ProtocolAPIView.as_view()),
     path('api/experiment/', ExperimentAPIView.as_view()),
     path('api/file/', FileAPIView.as_view()),
+    path('api/track-page/', TrackPageView.as_view(), name='track-page'),
 ]

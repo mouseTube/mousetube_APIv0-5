@@ -13,7 +13,9 @@ from rest_framework.pagination import PageNumberPagination
 from .serializers import *
 from .models import User, Strain, Subject, Protocol, Experiment, File
 from django.db.models import Q
-
+from rest_framework import status
+from django.utils.timezone import now
+from django.db.models import F
 
 class FilePagination(PageNumberPagination):
     page_size = 5
@@ -146,4 +148,23 @@ class FileAPIView(APIView):
         paginated_files = paginator.paginate_queryset(files, request)
         serializer = FileSerializer(paginated_files, many=True)
         return paginator.get_paginated_response(serializer.data)
+    
+class TrackPageView(APIView):
+    def post(self, request):
+        path = request.data.get('path')
+        if not path:
+            return Response({'error': 'Missing path'}, status=status.HTTP_400_BAD_REQUEST)
+
+        today = now().date()
+
+        obj, created = PageView.objects.get_or_create(
+            path=path,
+            date=today,
+            defaults={'count': 1}
+        )
+
+        if not created:
+            PageView.objects.filter(pk=obj.pk).update(count=F('count') + 1)
+
+        return Response({'status': 'ok'})
 
