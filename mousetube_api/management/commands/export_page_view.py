@@ -70,7 +70,9 @@ class Command(BaseCommand):
 <input type="date" id="start-date"> à
 <input type="date" id="end-date">
 
-<canvas id="chart" style="margin-top: 20px;"></canvas>
+<div style="display: flex; justify-content: center; align-items: center; max-width: 70%; margin-top: 50px;">
+    <canvas id="chart"></canvas>
+</div>
 
 <script>
 const rawData = {data};

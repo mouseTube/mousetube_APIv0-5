@@ -79,7 +79,7 @@ ROOT_URLCONF = 'mousetube_api.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'mousetube_api/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -91,7 +91,7 @@ TEMPLATES = [
         },
     },
 ]
-
+ADMIN_BASE_TEMPLATE = 'admin/base_site.html'
 WSGI_APPLICATION = 'mousetube_api.wsgi.application'
 
 

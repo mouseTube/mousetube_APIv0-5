@@ -1,5 +1,10 @@
 from django.contrib import admin
 from .models import User, Strain, Subject, Protocol, Experiment, File, PageView
+from django.contrib import admin
+from django.urls import reverse
+from django.utils.html import format_html
+
+
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ('first_name_user', 'name_user', 'email_user', 'unit_user', 'institution_user', 'country_user')

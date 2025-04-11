@@ -19,6 +19,10 @@ from django.db.models import F
 from django.core.cache import cache
 from django.core.management import call_command
 from drf_spectacular.utils import extend_schema
+from django.shortcuts import render
+from django.conf import settings
+import os
+from django.shortcuts import render
 
 class FilePagination(PageNumberPagination):
     page_size = 5
@@ -189,3 +193,16 @@ class TrackPageView(APIView):
             cache.set(cache_key, True, 60 * 60 * 24)
 
         return Response(PageViewSerializer(obj).data, status=status.HTTP_200_OK)
+
+def stats_view(request):
+    year = now().year
+    filename = f'stats_{year}.html'
+    output_path = os.path.join(settings.LOGS_DIR, filename)
+
+    if not os.path.exists(output_path):
+        return render(request, 'error.html', {'message': 'Stat file not found!'})
+
+    with open(output_path, 'r') as f:
+        content = f.read()
+
+    return render(request, 'stats_view.html', {'content': content})
