@@ -16,6 +16,8 @@ from django.db.models import Q
 from rest_framework import status
 from django.utils.timezone import now
 from django.db.models import F
+from django.core.cache import cache
+from django.core.management import call_command
 
 class FilePagination(PageNumberPagination):
     page_size = 5
@@ -65,6 +67,7 @@ class ExperimentAPIView(APIView):
 
 
 class FileAPIView(APIView):
+    serializer_class = FileSerializer
     def get(self, request, *args, **kwargs):
         search_query = request.GET.get('search', '')
         filter_query = request.GET.get('filter', '')
@@ -153,14 +156,18 @@ class FileAPIView(APIView):
         files = files.order_by('link_file')
         paginator = FilePagination()
         paginated_files = paginator.paginate_queryset(files, request)
-        serializer = FileSerializer(paginated_files, many=True)
+        serializer = self.serializer_class(paginated_files, many=True)
         return paginator.get_paginated_response(serializer.data)
-    
+
+  
 class TrackPageView(APIView):
+    serializer_class = TrackPageSerializer
     def post(self, request):
-        path = request.data.get('path')
-        if not path:
-            return Response({'error': 'Missing path'}, status=status.HTTP_400_BAD_REQUEST)
+        print("ok")
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        path = serializer.validated_data['path']
+        print(path)
 
         today = now().date()
 
@@ -172,6 +179,11 @@ class TrackPageView(APIView):
 
         if not created:
             PageView.objects.filter(pk=obj.pk).update(count=F('count') + 1)
+        
+        cache_key = f'pageview-log-generated-{today}'
 
-        return Response({'status': 'ok'})
+        if not cache.get(cache_key):
+            call_command('export_page_view', verbosity=0)
+            cache.set(cache_key, True, 60 * 60 * 24)
 
+        return Response(PageViewSerializer(obj).data, status=status.HTTP_200_OK)
