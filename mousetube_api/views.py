@@ -18,6 +18,7 @@ from django.utils.timezone import now
 from django.db.models import F
 from django.core.cache import cache
 from django.core.management import call_command
+from drf_spectacular.utils import extend_schema
 
 class FilePagination(PageNumberPagination):
     page_size = 5
@@ -159,9 +160,10 @@ class FileAPIView(APIView):
         serializer = self.serializer_class(paginated_files, many=True)
         return paginator.get_paginated_response(serializer.data)
 
-  
+
 class TrackPageView(APIView):
     serializer_class = TrackPageSerializer
+    @extend_schema(exclude=True)
     def post(self, request):
         print("ok")
         serializer = self.serializer_class(data=request.data)
