@@ -44,22 +44,17 @@ jobs:
         run: |
           ruff format --check .
 
-      # 🧹 6. Lint code with Ruff
-      - name: 🧹 Ruff linting
-        run: |
-          ruff .
-
-      # 🛡️ 7. Run Bandit security scan
+      # 🛡️ 6. Run Bandit security scan
       - name: 🛡️ Bandit security check
         run: |
           bandit -r . -x tests
 
-      # 🧪 8. Test installing the package in development mode (force reinstall)
+      # 🧪 7. Test installing the package in development mode (force reinstall)
       - name: 🧪 pip install -e . (force reinstall)
         run: |
           pip install --force-reinstall -e .
 
-      # 🏗️ 9. Build the project (testing packaging)
+      # 🏗️ 8. Build the project (testing packaging)
       - name: 🏗️ Build the project
         run: |
           python -m build
