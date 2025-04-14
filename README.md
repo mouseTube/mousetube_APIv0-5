@@ -23,7 +23,16 @@ The mechanisms of production, the temporal organization into sequences, the sign
 
 ### 1. Create a Python environment
 
-Create and activate a Python virtual environment for the project.
+We recommend creating a virtual environment to isolate the project's dependencies.
+
+```bash
+# Create a virtual environment
+python3 -m venv .venv
+
+# Activate it
+# On Linux/macOS:
+source .venv/bin/activate
+```
 
 ### 2. Create a `.env` file
 
