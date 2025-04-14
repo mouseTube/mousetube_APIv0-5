@@ -5,6 +5,13 @@ A temporary version of mouseTube API
 [![Made with Django](https://img.shields.io/badge/Made%20with-Django-blue)](https://www.djangoproject.com/)
 [![Made with Django REST framework](https://img.shields.io/badge/Made%20with-Django%20REST%20framework-blue)](https://www.django-rest-framework.org/)
 
+
+![Alt text](https://mousetube.pasteur.fr/images/logo_mousetube_big.png)
+
+<p align="center">
+  <img src="https://mousetube.pasteur.fr/images/logo_mousetube_big.png" alt="Mousetube">
+</p>
+
 ## What is mouseTube?
 
 Rodents communicate with each other through their various sensory modalities: olfaction (scent marking, glands), vision (postures), touch (contacts), and hearing (vocalizations). In the latter case, vocalizations are mainly emitted in the ultrasonic range, beyond human perception capabilities ([Anderson, 1954](https://doi.org/10.1126/science.119.3101.808); [Brudzynski, 2005](https://doi.org/10.1007/s10519-004-0858-3), [2021](https://doi.org/10.3390/brainsci11050605); [Portfors, 2007](https://www.metris.nl/media/documents/TypesandFunctionsofUSVinLabRatsandMice.pdf); [Schweinfurth, 2020](https://doi.org/10.7554/eLife.54020)).
