@@ -5,9 +5,6 @@ A temporary version of mouseTube API
 [![Made with Django](https://img.shields.io/badge/Made%20with-Django-blue)](https://www.djangoproject.com/)
 [![Made with Django REST framework](https://img.shields.io/badge/Made%20with-Django%20REST%20framework-blue)](https://www.django-rest-framework.org/)
 
-
-![Alt text](https://mousetube.pasteur.fr/images/logo_mousetube_big.png)
-
 <p align="center">
   <img src="https://mousetube.pasteur.fr/images/logo_mousetube_big.png" alt="Mousetube">
 </p>
