@@ -7,7 +7,7 @@
 A temporary version of mouseTube API
 
 <p align="center">
-  <img src="https://mousetube.pasteur.fr/images/logo_mousetube_big.png" alt="Mousetube" style="max-width: 50%;">
+  <img src="https://mousetube.pasteur.fr/images/logo_mousetube_big.png" alt="Mousetube" width="50%">
 </p>
 
 ## What is mouseTube?
