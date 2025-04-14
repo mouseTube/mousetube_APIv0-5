@@ -1,7 +1,7 @@
 # mouseTube_APIv0.5
 A temporary version of mouseTube API
 
-![Build Passing](https://img.shields.io/github/actions/workflow/status/mouseTube/mousetube_APIv0.5/ci_readme.yml?branch=ci_readme)
+![Build Passing](https://img.shields.io/github/actions/workflow/status/mouseTube/mousetube_APIv0.5/ci.yml?branch=ci_readme)
 [![Made with Django](https://img.shields.io/badge/Made%20with-Django-blue)](https://www.djangoproject.com/)
 [![Made with Django REST framework](https://img.shields.io/badge/Made%20with-Django%20REST%20framework-blue)](https://www.django-rest-framework.org/)
 
