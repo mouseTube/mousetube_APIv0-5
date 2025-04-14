@@ -14,23 +14,33 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import *
+from .views import (
+    UserAPIView,
+    StrainAPIView,
+    SubjectAPIView,
+    ProtocolAPIView,
+    ExperimentAPIView,
+    FileAPIView,
+)
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 router = DefaultRouter()
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
-    path('api/user/', UserAPIView.as_view()),
-    path('api/strain/', StrainAPIView.as_view()),
-    path('api/subject/', SubjectAPIView.as_view()),
-    path('api/protocol/', ProtocolAPIView.as_view()),
-    path('api/experiment/', ExperimentAPIView.as_view()),
-    path('api/file/', FileAPIView.as_view()),
-    path('schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path("admin/", admin.site.urls),
+    path("api/", include(router.urls)),
+    path("api/user/", UserAPIView.as_view()),
+    path("api/strain/", StrainAPIView.as_view()),
+    path("api/subject/", SubjectAPIView.as_view()),
+    path("api/protocol/", ProtocolAPIView.as_view()),
+    path("api/experiment/", ExperimentAPIView.as_view()),
+    path("api/file/", FileAPIView.as_view()),
+    path("schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"
+    ),
 ]

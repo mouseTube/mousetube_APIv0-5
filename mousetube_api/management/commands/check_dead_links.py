@@ -5,7 +5,8 @@ from django.core.management.base import BaseCommand
 from urllib.parse import urlparse
 from mousetube_api.models import File
 
-logger = logging.getLogger('check_dead_links')
+logger = logging.getLogger("check_dead_links")
+
 
 class Command(BaseCommand):
     help = "Check for dead links in mousetube files"
@@ -32,14 +33,16 @@ class Command(BaseCommand):
             try:
                 # Send a HEAD request to avoid downloading the entire file
                 time.sleep(1)  # Sleep for 1 second to avoid overwhelming the server
-                
+
                 # Check if the URL is reachable
                 # Use a timeout to avoid hanging indefinitely
                 # Use allow_redirects=True to follow redirects
                 response = requests.head(url, allow_redirects=True, timeout=5)
                 link_alive = response.status_code < 400
                 if response.status_code == 429:
-                    logger.warning(f"Rate limite reached with status code {response.status_code}: {url}")
+                    logger.warning(
+                        f"Rate limite reached with status code {response.status_code}: {url}"
+                    )
                     continue
             except requests.RequestException as e:
                 # Log broken links
