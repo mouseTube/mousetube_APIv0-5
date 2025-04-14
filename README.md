@@ -88,7 +88,8 @@ mousetube_api runserver
 
 - Torquet N., de Chaumont F., Faure P., Bourgeron T., Ey E. mouseTube – a database to collaboratively unravel mouse ultrasonic communication [version 1; peer review: 2 approved]. F1000Research 2016, 5:2332 ([F1000Research Link](https://doi.org/10.12688/f1000research.9439.1)) (2016).
 
-This is a temporary version of **mouseTube**.
-This version uses the same database as the initial version but with more recent and safer technologies. The main improvement is that data are now accessible without authentication.
-If you want to share vocalization files, please contact us. This version does not allow to share files, but we can do it manually.
-We are currently developing a new version with more functionalities.
+> **Info:**  
+> This is a temporary version of **mouseTube**.  
+> This version uses the same database as the initial version but with more recent and safer technologies. The main improvement is that data are now accessible without authentication.  
+> If you want to share vocalization files, please contact us. This version does not allow to share files, but we can do it manually.  
+> We are currently developing a new version with more functionalities.
