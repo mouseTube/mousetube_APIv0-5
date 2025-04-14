@@ -1,6 +1,6 @@
 services:
   db:
-    image: mariadb:11
+    image: mariadb:latest
     restart: always
     environment:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASS}
@@ -23,7 +23,8 @@ services:
     env_file:
       - .env
     environment:
-    - FIXTURE_FILE=/app/exported_data.json
+      DB_HOST: db
+      FIXTURE_FILE: /app/exported_data.json
 
 volumes:
   mariadb_data:

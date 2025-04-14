@@ -7,6 +7,7 @@ RUN apk update && apk add --no-cache \
     gcc \
     musl-dev \
     mariadb-dev \
+    mariadb-client \
     libffi-dev \
     build-base \
     pkgconfig \
