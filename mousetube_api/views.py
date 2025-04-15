@@ -17,8 +17,10 @@ from .serializers import (
     ProtocolSerializer,
     ExperimentSerializer,
     FileSerializer,
+    PageViewSerializer,
+    TrackPageSerializer
 )
-from .models import User, Strain, Subject, Protocol, Experiment, File
+from .models import User, Strain, Subject, Protocol, Experiment, File, PageView
 from django.db.models import Q
 from rest_framework import status
 from django.utils.timezone import now
@@ -29,7 +31,6 @@ from drf_spectacular.utils import extend_schema
 from django.shortcuts import render
 from django.conf import settings
 import os
-from django.shortcuts import render
 
 class FilePagination(PageNumberPagination):
     page_size = 5

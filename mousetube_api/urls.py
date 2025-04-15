@@ -30,6 +30,8 @@ from .views import TrackPageView
 from django.views.static import serve
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from django.contrib.admin.views.decorators import staff_member_required
+import os
+from django.conf import settings
 
 router = DefaultRouter()
 

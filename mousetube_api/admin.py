@@ -1,8 +1,5 @@
 from django.contrib import admin
-from .models import User, Strain, Subject, Protocol, Experiment, File, PageView
-from django.contrib import admin
-from django.urls import reverse
-from django.utils.html import format_html
+from .models import User, Strain, Subject, Protocol, Experiment, File
 
 
 
