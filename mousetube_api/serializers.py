@@ -7,7 +7,15 @@ PHENOMIN, CNRS UMR7104, INSERM U964, Université de Strasbourg
 Code under GPL v3.0 licence
 """
 
-from mousetube_api.models import User, Strain, Subject, Protocol, Experiment, File, PageView
+from mousetube_api.models import (
+    User,
+    Strain,
+    Subject,
+    Protocol,
+    Experiment,
+    File,
+    PageView,
+)
 from rest_framework import serializers
 
 
@@ -54,12 +62,14 @@ class FileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = File
-        fields = '__all__'
+        fields = "__all__"
+
 
 class PageViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = PageView
-        fields = '__all__'
+        fields = "__all__"
+
 
 class TrackPageSerializer(serializers.Serializer):
     path = serializers.CharField(max_length=255)

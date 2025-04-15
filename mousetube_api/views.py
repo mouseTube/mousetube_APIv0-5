@@ -18,7 +18,7 @@ from .serializers import (
     ExperimentSerializer,
     FileSerializer,
     PageViewSerializer,
-    TrackPageSerializer
+    TrackPageSerializer,
 )
 from .models import User, Strain, Subject, Protocol, Experiment, File, PageView
 from django.db.models import Q
@@ -31,6 +31,7 @@ from drf_spectacular.utils import extend_schema
 from django.shortcuts import render
 from django.conf import settings
 import os
+
 
 class FilePagination(PageNumberPagination):
     page_size = 5
@@ -85,6 +86,7 @@ class ExperimentAPIView(APIView):
 
 class FileAPIView(APIView):
     serializer_class = FileSerializer
+
     def get(self, request, *args, **kwargs):
         search_query = request.GET.get("search", "")
         filter_query = request.GET.get("filter", "")
@@ -201,42 +203,42 @@ class FileAPIView(APIView):
 
 class TrackPageView(APIView):
     serializer_class = TrackPageSerializer
+
     @extend_schema(exclude=True)
     def post(self, request):
         print("ok")
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        path = serializer.validated_data['path']
+        path = serializer.validated_data["path"]
         print(path)
 
         today = now().date()
 
         obj, created = PageView.objects.get_or_create(
-            path=path,
-            date=today,
-            defaults={'count': 1}
+            path=path, date=today, defaults={"count": 1}
         )
 
         if not created:
-            PageView.objects.filter(pk=obj.pk).update(count=F('count') + 1)
-        
-        cache_key = f'pageview-log-generated-{today}'
+            PageView.objects.filter(pk=obj.pk).update(count=F("count") + 1)
+
+        cache_key = f"pageview-log-generated-{today}"
 
         if not cache.get(cache_key):
-            call_command('export_page_view', verbosity=0)
+            call_command("export_page_view", verbosity=0)
             cache.set(cache_key, True, 60 * 60 * 24)
 
         return Response(PageViewSerializer(obj).data, status=status.HTTP_200_OK)
 
+
 def stats_view(request):
     year = now().year
-    filename = f'stats_{year}.html'
+    filename = f"stats_{year}.html"
     output_path = os.path.join(settings.LOGS_DIR, filename)
 
     if not os.path.exists(output_path):
-        return render(request, 'error.html', {'message': 'Stat file not found!'})
+        return render(request, "error.html", {"message": "Stat file not found!"})
 
-    with open(output_path, 'r') as f:
+    with open(output_path, "r") as f:
         content = f.read()
 
-    return render(request, 'stats_view.html', {'content': content})
+    return render(request, "stats_view.html", {"content": content})
