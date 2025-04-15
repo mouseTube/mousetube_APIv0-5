@@ -25,3 +25,6 @@ dev = ["pytest", "ruff"]
 
 [project.scripts]
 mousetube_api = "mousetube_api:manage"
+
+[tool.setuptools.packages.find]
+include = ["mousetube_api*"]
