@@ -107,5 +107,16 @@ class File(models.Model):
         return self.link_file
 
     class Meta:
-        verbose_name = "File"
-        verbose_name_plural = "Files"
+        verbose_name = 'File'
+        verbose_name_plural = 'Files'
+
+class PageView(models.Model):
+    path = models.CharField(max_length=255)
+    date = models.DateField(auto_now_add=True)
+    count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        unique_together = ('path', 'date')
+
+    def __str__(self):
+        return f"{self.path} - {self.date} ({self.count})"

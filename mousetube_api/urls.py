@@ -26,21 +26,34 @@ from .views import (
     ExperimentAPIView,
     FileAPIView,
 )
+from .views import TrackPageView
+from django.views.static import serve
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from django.contrib.admin.views.decorators import staff_member_required
 
 router = DefaultRouter()
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("api/", include(router.urls)),
-    path("api/user/", UserAPIView.as_view()),
-    path("api/strain/", StrainAPIView.as_view()),
-    path("api/subject/", SubjectAPIView.as_view()),
-    path("api/protocol/", ProtocolAPIView.as_view()),
-    path("api/experiment/", ExperimentAPIView.as_view()),
-    path("api/file/", FileAPIView.as_view()),
-    path("schema/", SpectacularAPIView.as_view(), name="schema"),
+    path('api/', include(router.urls)),
+    path('api/user/', UserAPIView.as_view()),
+    path('api/strain/', StrainAPIView.as_view()),
+    path('api/subject/', SubjectAPIView.as_view()),
+    path('api/protocol/', ProtocolAPIView.as_view()),
+    path('api/experiment/', ExperimentAPIView.as_view()),
+    path('api/file/', FileAPIView.as_view()),
+    path('api/track-page/', TrackPageView.as_view(), name='track-page'),
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path(
-        "swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"
+        'admin/stats/',
+        staff_member_required(
+            serve
+        ),
+        {
+            'document_root': os.path.join(settings.BASE_DIR, 'logs'),
+            'path': 'latest.html',
+        },
+        name='admin-stats'
     ),
+    path('admin/', admin.site.urls),
 ]
