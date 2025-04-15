@@ -1,7 +1,6 @@
 #!/bin/sh
 
 echo "⏳ Waiting for MariaDB to be ready..."
-# Try to connect with or without a password if it's the first time
 until mariadb -h db -u root -p"$DB_ROOT_PASS" -e "SELECT 1" &>/dev/null || mariadb -h db -u root -e "SELECT 1" &>/dev/null; do
     echo "⏳ MariaDB is not ready yet, retrying in 5 seconds..."
     sleep 5
@@ -9,8 +8,6 @@ done
 echo "✅ MariaDB is ready!"
 
 echo "🔍 Checking root access..."
-
-# If connection with password fails, try without password
 if mariadb -h db -u root -p"$DB_ROOT_PASS" -e "SELECT 1" &>/dev/null; then
     echo "✅ Root password is already set. Proceeding..."
 else
@@ -21,7 +18,6 @@ else
         exit 1
     fi
 
-    # If root password is not set, configure it
     mariadb -h db -u root <<EOF
 ALTER USER 'root'@'localhost' IDENTIFIED BY '$DB_ROOT_PASS';
 FLUSH PRIVILEGES;
@@ -33,7 +29,6 @@ EOF
     echo "✅ Root password successfully set."
 fi
 
-# Check if DB_NAME and DB_USER are set
 if [ -z "$DB_NAME" ] || [ -z "$DB_USER" ]; then
     echo "❌ DB_NAME or DB_USER is not set."
     exit 1
@@ -49,11 +44,24 @@ FLUSH PRIVILEGES;
 EOF
 
 echo "🛠️ Running makemigrations..."
-python3 manage.py makemigrations --noinput
+python3 manage.py makemigrations mousetube_api --noinput
 
 echo "📦 Applying migrations..."
 python3 manage.py migrate --noinput
 
+# 🚨 Vérification explicite des tables critiques avant loaddata
+echo "🔍 Verifying that all required tables exist before loading fixtures..."
+REQUIRED_TABLE="mousetube_api_protocol"
+TABLE_EXISTS=$(echo "SHOW TABLES LIKE '$REQUIRED_TABLE';" | mariadb -h db -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME")
+
+if echo "$TABLE_EXISTS" | grep -q "$REQUIRED_TABLE"; then
+    echo "✅ Table $REQUIRED_TABLE found, safe to load fixture."
+else
+    echo "❌ Required table $REQUIRED_TABLE does not exist. Migration may have failed. Aborting fixture load."
+    exit 1
+fi
+
+# ✅ Chargement des fixtures
 if [ -n "$FIXTURE_FILE" ] && [ -f "$FIXTURE_FILE" ]; then
     echo "📥 Loading fixture from $FIXTURE_FILE..."
     python3 manage.py loaddata "$FIXTURE_FILE"
@@ -61,6 +69,7 @@ else
     echo "⚠️ Fixture file not found or not defined. Skipping fixture loading."
 fi
 
+# ✅ Lancement du serveur
 if [ "$DEBUG" = "false" ]; then
     echo "🧪 Collecting static files..."
     python3 manage.py collectstatic --noinput
