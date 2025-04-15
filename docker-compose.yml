@@ -34,7 +34,7 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - backend
+      - web
     env_file:
       - ../mousetube_frontendv0.5/.env
 
