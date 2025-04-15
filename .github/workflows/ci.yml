@@ -42,6 +42,7 @@ jobs:
       # 🎨 5. Check code formatting with Ruff
       - name: 🎨 Ruff formatting check
         run: |
+          ruff check .
           ruff format --check .
 
       # 🛡️ 6. Run Bandit security scan
