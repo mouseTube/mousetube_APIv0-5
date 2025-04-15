@@ -51,3 +51,10 @@ class FileSerializer(serializers.ModelSerializer):
         model = File
         fields = '__all__'
 
+class PageViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PageView
+        fields = '__all__'
+
+class TrackPageSerializer(serializers.Serializer):
+    path = serializers.CharField(max_length=255)
