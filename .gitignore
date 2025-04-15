@@ -23,3 +23,5 @@ logs/
 *.sqlite3
 *.db
 *.db-journal
+
+.ruff_cache

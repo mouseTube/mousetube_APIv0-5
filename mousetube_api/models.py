@@ -1,17 +1,14 @@
-'''
+"""
 Created by Nicolas Torquet at 09/01/2025
 torquetn@igbmc.fr
 Copyright: CNRS - INSERM - UNISTRA - ICS - IGBMC
 CNRS - Mouse Clinical Institute
 PHENOMIN, CNRS UMR7104, INSERM U964, Université de Strasbourg
 Code under GPL v3.0 licence
-'''
+"""
 
 from django.db import models
-from django.conf import settings
-from django.core.exceptions import ValidationError
-from django.contrib.auth.models import AbstractUser
-from django.db import models
+
 
 class User(models.Model):
     name_user = models.CharField(max_length=255)
@@ -25,6 +22,7 @@ class User(models.Model):
     def __str__(self):
         return f"{self.first_name_user} {self.name_user}"
 
+
 class Strain(models.Model):
     name_strain = models.CharField(max_length=255, unique=True)
     background = models.CharField(max_length=255)
@@ -34,8 +32,8 @@ class Strain(models.Model):
         return self.name_strain
 
     class Meta:
-        verbose_name = 'Strain'
-        verbose_name_plural = 'Strains'
+        verbose_name = "Strain"
+        verbose_name_plural = "Strains"
 
 
 class Subject(models.Model):
@@ -52,22 +50,22 @@ class Subject(models.Model):
         return self.name_subject
 
     class Meta:
-        verbose_name = 'Subject'
-        verbose_name_plural = 'Subjects'
+        verbose_name = "Subject"
+        verbose_name_plural = "Subjects"
 
 
 class Protocol(models.Model):
     name_protocol = models.CharField(max_length=255)
     number_files = models.IntegerField(blank=True, null=True)
-    protocol_description = models.TextField(default='')
+    protocol_description = models.TextField(default="")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name_protocol
 
     class Meta:
-        verbose_name = 'Protocol'
-        verbose_name_plural = 'Protocols'
+        verbose_name = "Protocol"
+        verbose_name_plural = "Protocols"
 
 
 class Experiment(models.Model):
@@ -88,26 +86,30 @@ class Experiment(models.Model):
         return self.name_experiment
 
     class Meta:
-        verbose_name = 'Experiment'
-        verbose_name_plural = 'Experiments'
+        verbose_name = "Experiment"
+        verbose_name_plural = "Experiments"
 
 
 class File(models.Model):
-    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, blank=True, null=True)
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, blank=True, null=True)
+    experiment = models.ForeignKey(
+        Experiment, on_delete=models.CASCADE, blank=True, null=True
+    )
+    subject = models.ForeignKey(
+        Subject, on_delete=models.CASCADE, blank=True, null=True
+    )
     file_number = models.IntegerField(blank=True, null=True)
     link_file = models.URLField(blank=True, null=True)
     notes_file = models.TextField(blank=True, null=True)
     doi_file = models.CharField(max_length=255, blank=True, null=True)
     is_valid_link = models.BooleanField(default=False)
 
-
     def __str__(self):
         return self.link_file
 
     class Meta:
-        verbose_name = 'File'
-        verbose_name_plural = 'Files'
+        verbose_name = "File"
+        verbose_name_plural = "Files"
+
 
 class PageView(models.Model):
     path = models.CharField(max_length=255)
@@ -115,7 +117,7 @@ class PageView(models.Model):
     count = models.PositiveIntegerField(default=0)
 
     class Meta:
-        unique_together = ('path', 'date')
+        unique_together = ("path", "date")
 
     def __str__(self):
         return f"{self.path} - {self.date} ({self.count})"

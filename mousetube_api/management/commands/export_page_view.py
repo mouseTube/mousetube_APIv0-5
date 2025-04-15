@@ -4,42 +4,45 @@ from django.utils import timezone
 from django.db.models import Sum
 from mousetube_api.models import PageView
 
-LOGS_DIR = 'logs/'
+LOGS_DIR = "logs/"
+
 
 class Command(BaseCommand):
-    help = 'Export page views to a static HTML report'
+    help = "Export page views to a static HTML report"
 
     def handle(self, *args, **kwargs):
         year = timezone.now().year
-        filename = f'stats_{year}.html'
+        filename = f"stats_{year}.html"
         output_path = os.path.join(LOGS_DIR, filename)
 
         # Get all visites for the current year
-        views = PageView.objects.filter(date__year=year).order_by('date')
+        views = PageView.objects.filter(date__year=year).order_by("date")
 
         # Organize data by date and path for easy filtering
         data = [
-            {'path': view.path, 'date': view.date.isoformat(), 'count': view.count}
+            {"path": view.path, "date": view.date.isoformat(), "count": view.count}
             for view in views
         ]
-        
+
         # Extract all unique pages for the page selector
-        pages = list(set(view['path'] for view in data))
+        pages = list(set(view["path"] for view in data))
 
         # If you choose "All pages", group by date and add up the visits
         total_data = []
-        for view in views.values('date').annotate(total_visits=Sum('count')):
-            total_data.append({'date': view['date'].isoformat(), 'count': view['total_visits']})
+        for view in views.values("date").annotate(total_visits=Sum("count")):
+            total_data.append(
+                {"date": view["date"].isoformat(), "count": view["total_visits"]}
+            )
 
-        with open(output_path, 'w') as f:
+        with open(output_path, "w") as f:
             f.write(self.render_html(data, year, pages, total_data))
 
         # Save a "latest" file for the most recent page
-        latest_path = os.path.join(LOGS_DIR, 'latest.html')
-        with open(latest_path, 'w') as f:
+        latest_path = os.path.join(LOGS_DIR, "latest.html")
+        with open(latest_path, "w") as f:
             f.write(self.render_html(data, year, pages, total_data))
 
-        self.stdout.write(self.style.SUCCESS(f'Exported stats to {output_path}'))
+        self.stdout.write(self.style.SUCCESS(f"Exported stats to {output_path}"))
 
     def render_html(self, data, year, pages, total_data):
         return f"""
