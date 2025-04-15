@@ -26,5 +26,17 @@ services:
       DB_HOST: db
       FIXTURE_FILE: /app/exported_data.json
 
+  frontend:
+    build: ../mousetube_frontendv0.5
+    command: /entrypoint.sh
+    volumes:
+      - ../mousetube_frontendv0.5:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    env_file:
+      - ../mousetube_frontendv0.5/.env
+
 volumes:
   mariadb_data:
