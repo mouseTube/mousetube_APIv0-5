@@ -49,7 +49,7 @@ python3 manage.py makemigrations mousetube_api --noinput
 echo "📦 Applying migrations..."
 python3 manage.py migrate --noinput
 
-# 🚨 Explicit check for critical tables before loaddata
+# 🚨 Explicit check of critical tables before loading data
 echo "🔍 Verifying that all required tables exist before loading fixtures..."
 REQUIRED_TABLE="mousetube_api_protocol"
 TABLE_EXISTS=$(echo "SHOW TABLES LIKE '$REQUIRED_TABLE';" | mariadb -h db -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME")
@@ -61,7 +61,7 @@ else
     exit 1
 fi
 
-# ✅ Load fixture
+# ✅ Loading fixtures
 if [ -n "$FIXTURE_FILE" ] && [ -f "$FIXTURE_FILE" ]; then
     echo "📥 Loading fixture from $FIXTURE_FILE..."
     python3 manage.py loaddata "$FIXTURE_FILE"
