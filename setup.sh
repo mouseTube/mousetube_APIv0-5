@@ -20,7 +20,7 @@ echo "Fixture file to load: $FIXTURE_FILE"
 
 echo "🔧 Checking for MariaDB dependencies..."
 
-# Vérifie si pkg-config est installé
+# Check if pkg-config is installed
 if ! dpkg -s pkg-config &>/dev/null; then
     echo "📦 Installing pkg-config..."
     sudo apt-get update
@@ -29,7 +29,7 @@ else
     echo "✅ pkg-config already installed."
 fi
 
-# Vérifie si libmariadb-dev est installé
+# Check if libmariadb-dev is installed
 if ! dpkg -s libmariadb-dev &>/dev/null; then
     echo "📦 Installing libmariadb-dev..."
     sudo apt-get update
@@ -38,7 +38,7 @@ else
     echo "✅ libmariadb-dev already installed."
 fi
 
-# Vérifier si MariaDB est déjà en cours d'exécution
+# Check if MariaDB is already running
 if ! systemctl is-active --quiet mariadb; then
     echo "🔧 Installing MariaDB server..."
     sudo apt install -y mariadb-server
@@ -48,7 +48,7 @@ else
     echo "✅ MariaDB server is already running."
 fi
 
-# Vérifie l'accès root à MariaDB
+# Check root access to MariaDB
 echo "🔍 Checking root access..."
 if mysql -u root -e "SELECT 1" &>/dev/null; then
     echo "⚠️  No root password detected. Setting a new password..."
@@ -70,7 +70,7 @@ if ! mysql -u root -p"$DB_ROOT_PASS" -e "SELECT 1" &>/dev/null; then
     exit 1
 fi
 
-# Si "update" est spécifié ou mousetube_api n'est pas installé, installer/réinstaller
+# If "update" is specified or mousetube_api is not installed, install/reinstall
 if [ "$UPDATE" == true ] || ! python3 -c "import mousetube_api" &>/dev/null; then
     echo "📦 mousetube_api not found or 'update' flag specified. Installing/reinstalling dependencies..."
     pip install --upgrade pip
@@ -79,7 +79,7 @@ else
     echo "✅ mousetube_api is already installed, skipping installation."
 fi
 
-# Si le fichier d'environnement existe, le charger
+# If the environment file exists, load it
 if [ -f mousetube.env ]; then
     export $(grep -v '^#' mousetube.env | xargs)
 elif [ -f .env ]; then
@@ -122,19 +122,19 @@ echo "🐍 Running Django migrations..."
 python3 manage.py makemigrations --noinput
 python3 manage.py migrate --noinput
 
-# Optionnel : charger les fixtures
+# Optional: load fixtures
 if [ -f "$FIXTURE_FILE" ]; then
     echo "📦 Loading Django fixture from $FIXTURE_FILE..."
     python3 manage.py loaddata "$FIXTURE_FILE"
 fi
 
-# Collecter les fichiers statiques en mode production
+# Collect static files in production mode
 if [ "$DEBUG" == "false" ]; then
     echo "📦 Collecting static files..."
     python3 manage.py collectstatic --noinput
 fi
 
-# Démarrer le serveur si on est en mode "deploy"
+# Start the server if in "deploy" mode
 if [ "$DEPLOY" == "true" ]; then
     if [ "$DEBUG" == "false" ]; then
         echo "🚀 Starting Gunicorn server..."
