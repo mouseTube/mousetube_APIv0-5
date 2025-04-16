@@ -12,11 +12,7 @@ A temporary version of mouseTube API
 
 ## What is mouseTube?
 
-Rodents communicate with each other through their various sensory modalities: olfaction (scent marking, glands), vision (postures), touch (contacts), and hearing (vocalizations). In the latter case, vocalizations are mainly emitted in the ultrasonic range, beyond human perception capabilities ([Anderson, 1954](https://doi.org/10.1126/science.119.3101.808); [Brudzynski, 2005](https://doi.org/10.1007/s10519-004-0858-3), [2021](https://doi.org/10.3390/brainsci11050605); [Portfors, 2007](https://www.metris.nl/media/documents/TypesandFunctionsofUSVinLabRatsandMice.pdf); [Schweinfurth, 2020](https://doi.org/10.7554/eLife.54020)).
-Ultrasonic vocalizations are emitted in various contexts: by isolated pups during the first two weeks of life, by juveniles and adults during same-sex social interactions, by males in the presence of females, and by individuals in aversive or appetitive situations (restraint stress, anticipation of pain, social play, food rewards) and exploring an unfamiliar environment. These ultrasonic vocalizations are used as markers of motivation and social communication ([Fischer and Hammerschmidt, 2010](https://doi.org/10.1111/j.1601-183X.2010.00610.x); [Schweinfurth, 2020](https://doi.org/10.7554/eLife.54020)), or of susceptibility to stress or anxiety, depending on the type of signal examined ([Brudzynski, 2005](https://doi.org/10.1007/s10519-004-0858-3)).
-Ultrasonic vocalizations are therefore routinely measured in rodent models of neuropsychiatric conditions ([Premoli et al., 2023](https://doi.org/10.1111/ejn.15957)).
-
-The mechanisms of production, the temporal organization into sequences, the significance of the acoustic features, and the effect on the recipient are far from elucidated. Understanding the complexity of this communication system requires a vast amount of data to explore with high-performance analysis methods. For that purpose, we developed **mouseTube**, a database designed to facilitate sharing, archiving, and analyzing raw recording files of rodent ultrasonic vocalizations following the FAIR (Findable, Accessible, Interoperable, Reusable) principles ([Wilkinson et al., 2016](https://doi.org/10.1038/sdata.2016.18)).
+ **mouseTube** is a database designed to facilitate sharing, archiving, and analyzing raw recording files of rodent ultrasonic vocalizations following the FAIR (Findable, Accessible, Interoperable, Reusable) principles ([Wilkinson et al., 2016](https://doi.org/10.1038/sdata.2016.18)).
 
 
 ## Installation
@@ -92,6 +88,52 @@ Finally, start the Django development server:
 ```bash
 mousetube_api runserver
 ```
+## Docker Alternative FullStack Installation
+
+1. Clone the repositories:
+
+   ```bash
+   git clone https://github.com/mouseTube/mousetube_APIv0.5.git
+   git clone https://github.com/mouseTube/mousetube_frontendv0.5.git
+   ```
+
+2. Add a .env file in the mousetube_APIv0.5 folder as described earlier in the section "2. Create a .env file".
+
+3. Add a .env file in the mousetube_frontendv0.5 folder with the following content:
+
+   ```env
+   DEBUG=true
+   NUXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000
+   ```
+
+4. Navigate to the mousetube_APIv0.5 folder and run the following command to build the Docker image and start all required services:
+
+   ```bash
+   docker compose up --build
+   ```
+
+### Docker Stop and Clean Up
+
+To stop the running containers:
+
+```bash
+docker compose down
+```
+
+To stop and remove all containers, networks, and volumes created by Docker Compose:
+
+```bash
+docker compose down -v
+```
+
+To remove all unused Docker images and free up space (optional):
+
+```bash
+docker image prune -a
+```
+
+**⚠️ Warning:** `docker image prune -a` will remove **all** images not currently used by any container. Use it only if you're sure you don't need them anymore.
+
 
 ## Check out mouseTube's publications:
 
