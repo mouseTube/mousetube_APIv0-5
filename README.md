@@ -99,11 +99,11 @@ mousetube_api runserver
 
 2. Add a .env file in the mousetube_APIv0.5 folder as described earlier in the section "2. Create a .env file".
 
-3. Add a .env file in the mousetube_frontendv0.5 folder with the following content:
+3. Add a .env file in the mousetube_frontendv0.5 folder with the following content (not mandatory in development mode):
 
    ```env
    DEBUG=true
-   NUXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000
+   NUXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api
    ```
 
 4. Navigate to the mousetube_APIv0.5 folder and run the following command to build the Docker image and start all required services:
