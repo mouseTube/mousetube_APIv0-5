@@ -206,11 +206,9 @@ class TrackPageView(APIView):
 
     @extend_schema(exclude=True)
     def post(self, request):
-        print("ok")
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         path = serializer.validated_data["path"]
-        print(path)
 
         today = now().date()
 

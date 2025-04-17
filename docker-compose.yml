@@ -25,6 +25,7 @@ services:
     environment:
       DB_HOST: db
       FIXTURE_FILE: /app/exported_data.json
+    user: "${UID:-1000}:${GID:-1000}"
 
   frontend:
     build: ../mousetube_frontendv0.5
@@ -37,6 +38,7 @@ services:
       - web
     env_file:
       - ../mousetube_frontendv0.5/.env
+    user: "${UID:-1000}:${GID:-1000}"
 
 volumes:
   mariadb_data:
