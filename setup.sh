@@ -5,14 +5,16 @@ set -e
 FIXTURE_FILE=./exported_data.json
 DEPLOY=false
 UPDATE=false
+RESET_DB=false
 
 # Parse arguments
 for arg in "$@"; do
     if [[ "$arg" == "deploy" ]]; then
         DEPLOY=true
-    fi
-    if [[ "$arg" == "update" ]]; then
+    elif [[ "$arg" == "update" ]]; then
         UPDATE=true
+    elif [[ "$arg" == "reset" ]]; then
+        RESET_DB=true
     fi
 done
 
@@ -20,34 +22,18 @@ echo "Fixture file to load: $FIXTURE_FILE"
 
 echo "🔧 Checking for MariaDB dependencies..."
 
-# Check if pkg-config is installed
-if ! dpkg -s pkg-config &>/dev/null; then
-    echo "📦 Installing pkg-config..."
-    sudo apt-get update
-    sudo apt-get install -y pkg-config
-else
-    echo "✅ pkg-config already installed."
-fi
+# Check dependencies
+for pkg in pkg-config libmariadb-dev python3-dev; do
+    if ! dpkg -s "$pkg" &>/dev/null; then
+        echo "📦 Installing $pkg..."
+        sudo apt-get update
+        sudo apt-get install -y "$pkg"
+    else
+        echo "✅ $pkg already installed."
+    fi
+done
 
-# Check if libmariadb-dev is installed
-if ! dpkg -s libmariadb-dev &>/dev/null; then
-    echo "📦 Installing libmariadb-dev..."
-    sudo apt-get update
-    sudo apt-get install -y libmariadb-dev
-else
-    echo "✅ libmariadb-dev already installed."
-fi
-
-# Check if python3-dev is installed
-if ! dpkg -s python3-dev &>/dev/null; then
-    echo "📦 Installing python3-dev..."
-    sudo apt-get update
-    sudo apt-get install -y python3-dev
-else
-    echo "✅ python3-dev already installed."
-fi
-
-# Check if MariaDB is already running
+# Check MariaDB server
 if ! systemctl is-active --quiet mariadb; then
     echo "🔧 Installing MariaDB server..."
     sudo apt install -y mariadb-server
@@ -57,7 +43,6 @@ else
     echo "✅ MariaDB server is already running."
 fi
 
-# Wait until MariaDB is ready
 echo "⏳ Waiting for MariaDB to be ready..."
 until sudo mariadb -u root -e "SELECT 1" &>/dev/null; do
     echo "⏳ MariaDB is not ready yet, retrying in 5 seconds..."
@@ -65,7 +50,24 @@ until sudo mariadb -u root -e "SELECT 1" &>/dev/null; do
 done
 echo "✅ MariaDB is ready!"
 
-# Check and configure root password
+# Load env
+if [ -f mousetube.env ]; then
+    export $(grep -v '^#' mousetube.env | xargs)
+elif [ -f .env ]; then
+    export $(grep -v '^#' .env | xargs)
+else
+    echo "No .env or mousetube.env file found!"
+    exit 1
+fi
+
+# Check DB vars
+if [ -z "$DB_NAME" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASSWORD" ]; then
+    echo "❌ DB_NAME, DB_USER or DB_PASSWORD is not set."
+    exit 1
+fi
+
+# Check and set root password
+echo "DB_ROOT_PASS=$DB_ROOT_PASS"
 echo "🔍 Checking root access..."
 if mariadb -u root -p"$DB_ROOT_PASS" -e "SELECT 1" &>/dev/null; then
     echo "✅ Root password is already set. Proceeding..."
@@ -86,55 +88,12 @@ EOF
         echo "❌ Failed to set root password."
         exit 1
     fi
-
     echo "✅ Root password successfully set."
 fi
 
-# Verify root password works
-if ! mariadb -u root -p"$DB_ROOT_PASS" -e "SELECT 1" &>/dev/null; then
-    echo "❌ Incorrect root password. Check the DB_ROOT_PASS variable."
-    exit 1
-fi
-
-# Ensure required DB variables are set
-if [ -z "$DB_NAME" ] || [ -z "$DB_USER" ]; then
-    echo "❌ DB_NAME or DB_USER is not set."
-    exit 1
-fi
-
-# If update is specified or mousetube_api isn't installed, (re)install it
-if [ "$UPDATE" == true ] || ! python3 -c "import mousetube_api" &>/dev/null || ! python3 -c "import django" &>/dev/null; then
-    echo "📦 mousetube_api not found or 'update' flag specified. Installing/reinstalling dependencies..."
-    pip install --upgrade pip
-    pip install -e .
-else
-    echo "✅ mousetube_api is already installed, skipping installation."
-fi
-
-# Load env variables from file if available
-if [ -f mousetube.env ]; then
-    export $(grep -v '^#' mousetube.env | xargs)
-elif [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs)
-else
-    echo "No .env or mousetube.env file found!"
-    exit 1
-fi
-
-echo "🔍 Checking if database '$DB_NAME' already exists and contains tables..."
-DB_TABLE_COUNT=$(mysql -u root -p"$DB_ROOT_PASS" -N -B -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$DB_NAME';")
-
-if [ "$DB_TABLE_COUNT" -gt 0 ]; then
-    echo "✅ Database '$DB_NAME' already exists and contains tables. Skipping recreation."
-else
-    echo "⚠️  This operation will delete and recreate the database '$DB_NAME'. Continue? (y/n)"
-    read CONFIRM
-    if [ "$CONFIRM" != "y" ]; then
-        echo "❌ Operation canceled."
-        exit 1
-    fi
-
-    echo "🚀 Recreating the database..."
+# Reset or create DB
+if [ "$RESET_DB" = true ]; then
+    echo "🚀 RESET_DB=true → Recreating the database '$DB_NAME'..."
     sudo mariadb -u root -p"$DB_ROOT_PASS" <<EOF
 DROP DATABASE IF EXISTS $DB_NAME;
 CREATE DATABASE $DB_NAME;
@@ -142,30 +101,58 @@ CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASSWORD';
 GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';
 FLUSH PRIVILEGES;
 EOF
-
-    if [ $? -ne 0 ]; then
-        echo "❌ Error configuring the database."
-        exit 1
+else
+    echo "🔍 Checking if database '$DB_NAME' exists and has tables..."
+    DB_TABLE_COUNT=$(mysql -u root -p"$DB_ROOT_PASS" -N -B -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$DB_NAME';")
+    if [ "$DB_TABLE_COUNT" -eq 0 ]; then
+        echo "⚠️ Database is empty. Creating DB and user..."
+        sudo mariadb -u root -p"$DB_ROOT_PASS" <<EOF
+CREATE DATABASE IF NOT EXISTS $DB_NAME;
+CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASSWORD';
+GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';
+FLUSH PRIVILEGES;
+EOF
+    else
+        echo "✅ Database '$DB_NAME' already contains tables. Skipping creation."
     fi
 fi
 
+# Install Python deps
+if [ "$UPDATE" == true ] || ! python3 -c "import mousetube_api" &>/dev/null || ! python3 -c "import django" &>/dev/null; then
+    echo "📦 Installing/reinstalling Python dependencies..."
+    pip install --upgrade pip
+    pip install -e .
+else
+    echo "✅ Python dependencies already installed."
+fi
+
+# Migrations
 echo "🐍 Running Django migrations..."
 python3 manage.py makemigrations --noinput
 python3 manage.py migrate --noinput
 
-# Optionally load fixtures
+# Fixtures (conditional load)
 if [ -f "$FIXTURE_FILE" ]; then
-    echo "📦 Loading Django fixture from $FIXTURE_FILE..."
-    python3 manage.py loaddata "$FIXTURE_FILE"
+    echo "🔍 Checking if the table is empty before loading fixture..."
+    ROW_COUNT=$(echo "SELECT COUNT(*) FROM mousetube_api_protocol;" | mariadb -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" -N)
+
+    if [ "$ROW_COUNT" -eq 0 ]; then
+        echo "📥 Table is empty. Loading fixture from $FIXTURE_FILE..."
+        python3 manage.py loaddata "$FIXTURE_FILE"
+    else
+        echo "✅ Table already contains $ROW_COUNT rows. Skipping fixture loading."
+    fi
+else
+    echo "⚠️ Fixture file not found. Skipping fixture loading."
 fi
 
-# Collect static files in production mode
+# Static files (production only)
 if [ "$DEBUG" == "false" ]; then
     echo "📦 Collecting static files..."
     python3 manage.py collectstatic --noinput
 fi
 
-# Start the server if "deploy" flag is set
+# Run server
 if [ "$DEPLOY" == "true" ]; then
     if [ "$DEBUG" == "false" ]; then
         echo "🚀 Starting Gunicorn server..."

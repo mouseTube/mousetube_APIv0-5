@@ -99,7 +99,7 @@ mousetube_api runserver
 
 2. Add a .env file in the mousetube_APIv0.5 folder as described earlier in the section "2. Create a .env file".
 
-3. Add a .env file in the mousetube_frontendv0.5 folder with the following content (not mandatory in development mode):
+3. Add a .env file in the mousetube_frontendv0.5 folder with the following content:
 
    ```env
    DEBUG=true

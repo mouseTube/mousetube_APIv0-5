@@ -29,19 +29,26 @@ EOF
     echo "✅ Root password successfully set."
 fi
 
-if [ -z "$DB_NAME" ] || [ -z "$DB_USER" ]; then
-    echo "❌ DB_NAME or DB_USER is not set."
+if [ -z "$DB_NAME" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASSWORD" ]; then
+    echo "❌ DB_NAME, DB_USER, or DB_PASSWORD is not set."
     exit 1
 fi
 
-echo "🚀 Recreating the database..."
-mariadb -h db -u root -p"$DB_ROOT_PASS" <<EOF
+if [ "$RESET_DB" = "true" ]; then
+    echo "🚀 RESET_DB=true → Recreating the database..."
+    mariadb -h db -u root -p"$DB_ROOT_PASS" <<EOF
 DROP DATABASE IF EXISTS $DB_NAME;
 CREATE DATABASE $DB_NAME;
 CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASSWORD';
 GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';
 FLUSH PRIVILEGES;
 EOF
+else
+    echo "🛠️ RESET_DB=false → Ensuring database $DB_NAME exists..."
+    mariadb -h db -u root -p"$DB_ROOT_PASS" -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
+    mariadb -h db -u root -p"$DB_ROOT_PASS" -e "CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASSWORD';"
+    mariadb -h db -u root -p"$DB_ROOT_PASS" -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost'; FLUSH PRIVILEGES;"
+fi
 
 echo "🛠️ Running makemigrations..."
 python3 manage.py makemigrations mousetube_api --noinput
@@ -61,10 +68,20 @@ else
     exit 1
 fi
 
-# ✅ Loading fixtures
+# ✅ Loading fixtures conditionnel si la table est vide
 if [ -n "$FIXTURE_FILE" ] && [ -f "$FIXTURE_FILE" ]; then
-    echo "📥 Loading fixture from $FIXTURE_FILE..."
-    python3 manage.py loaddata "$FIXTURE_FILE"
+    echo "🔍 Checking if the corresponding table is empty before loading fixture..."
+
+    TABLE_NAME="mousetube_api_protocol"
+
+    ROW_COUNT=$(echo "SELECT COUNT(*) FROM $TABLE_NAME;" | mariadb -h db -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" -N)
+
+    if [ "$ROW_COUNT" -eq 0 ]; then
+        echo "📥 Table $TABLE_NAME is empty. Loading fixture from $FIXTURE_FILE..."
+        python3 manage.py loaddata "$FIXTURE_FILE"
+    else
+        echo "✅ Table $TABLE_NAME already contains data ($ROW_COUNT rows). Skipping fixture loading."
+    fi
 else
     echo "⚠️ Fixture file not found or not defined. Skipping fixture loading."
 fi
