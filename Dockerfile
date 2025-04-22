@@ -16,7 +16,6 @@ RUN apk update && apk add --no-cache \
 WORKDIR /app
 
 COPY . .
-RUN if [ -f ./exported_data.json ]; then cp ./exported_data.json /app/exported_data.json; fi
 
 RUN pip install --upgrade pip
 RUN pip install -e .

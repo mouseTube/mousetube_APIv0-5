@@ -46,6 +46,22 @@ DEBUG = env("DEBUG", default=False)
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+# CORS_ALLOWED_ORIGINS = [
+#     "https://mousetube.france-bioinformatique.fr",
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000",
+#     "https://mousetube.local"
+# ]
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://mousetube.france-bioinformatique.fr",
+#     "https://mousetube.local"
+# ]
+# CORS_ALLOW_CREDENTIALS = True
+
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+
 
 # Application definition
 
@@ -145,7 +161,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
