@@ -27,3 +27,4 @@ logs/
 .ruff_cache
 
 ssl
+staticfiles
