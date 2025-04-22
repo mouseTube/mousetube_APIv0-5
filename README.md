@@ -1,6 +1,6 @@
-<h1 align="center">mouseTube_APIv0.5</h1>
+<h1 align="center">mouseTube_APIv0-5</h1>
 
-![Build Passing](https://img.shields.io/github/actions/workflow/status/mouseTube/mousetube_APIv0.5/ci.yml?branch=main)
+![Build Passing](https://img.shields.io/github/actions/workflow/status/mouseTube/mousetube_APIv0-5/ci.yml?branch=main)
 [![Made with Django](https://img.shields.io/badge/Made%20with-Django-blue)](https://www.djangoproject.com/)
 [![Made with Django REST framework](https://img.shields.io/badge/Made%20with-Django%20REST%20framework-blue)](https://www.django-rest-framework.org/)
 
@@ -93,20 +93,20 @@ mousetube_api runserver
 1. Clone the repositories:
 
    ```bash
-   git clone https://github.com/mouseTube/mousetube_APIv0.5.git
-   git clone https://github.com/mouseTube/mousetube_frontendv0.5.git
+   git clone https://github.com/mouseTube/mousetube_APIv0-5.git
+   git clone https://github.com/mouseTube/mousetube_frontendv0-5.git
    ```
 
-2. Add a .env file in the mousetube_APIv0.5 folder as described earlier in the section "2. Create a .env file".
+2. Add a .env file in the mousetube_APIv0-5 folder as described earlier in the section "2. Create a .env file".
 
-3. Add a .env file in the mousetube_frontendv0.5 folder with the following content:
+3. Add a .env file in the mousetube_frontendv0-5 folder with the following content:
 
    ```env
    DEBUG=true
    NUXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api
    ```
 
-4. Navigate to the mousetube_APIv0.5 folder and run the following command to build the Docker image and start all required services:
+4. Navigate to the mousetube_APIv0-5 folder and run the following command to build the Docker image and start all required services:
 
    ```bash
    docker compose up --build

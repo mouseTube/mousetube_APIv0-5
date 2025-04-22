@@ -30,16 +30,16 @@ services:
     user: "${UID:-1000}:${GID:-1000}"
 
   frontend:
-    build: ../mousetube_frontendv0.5
+    build: ../mousetube_frontendv0-5
     command: /entrypoint.sh
     volumes:
-      - ../mousetube_frontendv0.5:/app
+      - ../mousetube_frontendv0-5:/app
     expose:
       - "3000"
     depends_on:
       - web
     env_file:
-      - ../mousetube_frontendv0.5/.env
+      - ../mousetube_frontendv0-5/.env
     user: "${UID:-1000}:${GID:-1000}"
 
   nginx:
