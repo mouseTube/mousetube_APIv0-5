@@ -115,7 +115,8 @@ WSGI_APPLICATION = "mousetube_api.wsgi.application"
 
 
 # Database
-
+def is_docker():
+    return os.path.exists("/.dockerenv")
 DATABASES = {
     "default": {
         "ENGINE": env("DB_ENGINE", default="django.db.backends.mysql"),
@@ -123,7 +124,7 @@ DATABASES = {
         "USER": env("DB_USER", default=""),
         "PASSWORD": env("DB_PASSWORD", default=""),
         "HOST": env("DB_HOST", default="127.0.0.1"),
-        "PORT": env("DB_PORT", default="3306"),
+        "PORT": "3306" if is_docker() else env("DB_PORT", default="3306"),
         "OPTIONS": {"ssl": env.bool("DB_SSL", default=False)},
     }
 }
