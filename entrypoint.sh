@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ -z "$DB_ROOT_PASS" ]; then
+    echo "❌ DB_ROOT_PASS is not set."
+    exit 1
+fi
+
 echo "⏳ Waiting for MariaDB to be ready..."
 until mariadb -h db -u root -p"$DB_ROOT_PASS" -e "SELECT 1" &>/dev/null || mariadb -h db -u root -e "SELECT 1" &>/dev/null; do
     echo "⏳ MariaDB is not ready yet, retrying in 5 seconds..."
@@ -12,11 +17,6 @@ if mariadb -h db -u root -p"$DB_ROOT_PASS" -e "SELECT 1" &>/dev/null; then
     echo "✅ Root password is already set. Proceeding..."
 else
     echo "⚠️ No root password detected. Setting a new password..."
-    
-    if [ -z "$DB_ROOT_PASS" ]; then
-        echo "❌ DB_ROOT_PASS is not set."
-        exit 1
-    fi
 
     mariadb -h db -u root <<EOF
 ALTER USER 'root'@'localhost' IDENTIFIED BY '$DB_ROOT_PASS';
