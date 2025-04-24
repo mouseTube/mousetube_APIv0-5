@@ -7,6 +7,8 @@ services:
       MARIADB_DATABASE: ${DB_NAME}
       MARIADB_USER: ${DB_USER}
       MARIADB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:3306"
     volumes:
       - mariadb_data:/var/lib/mysql
 
@@ -25,19 +27,20 @@ services:
     environment:
       DB_HOST: db
       FIXTURE_FILE: /app/exported_data.json
+      DJANGO_RUNNING_IN_DOCKER: "true"
     user: "${UID:-1000}:${GID:-1000}"
 
   frontend:
-    build: ../mousetube_frontendv0.5
+    build: ../mousetube_frontendv0-5
     command: /entrypoint.sh
     volumes:
-      - ../mousetube_frontendv0.5:/app
+      - ../mousetube_frontendv0-5:/app
     ports:
       - "3000:3000"
     depends_on:
       - web
     env_file:
-      - ../mousetube_frontendv0.5/.env
+      - ../mousetube_frontendv0-5/.env
     user: "${UID:-1000}:${GID:-1000}"
 
 volumes:

@@ -1,4 +1,9 @@
-#!/bin/sh
+#!/bin/bash
+
+if [ -z "$DB_ROOT_PASS" ]; then
+    echo "❌ DB_ROOT_PASS is not set."
+    exit 1
+fi
 
 echo "⏳ Waiting for MariaDB to be ready..."
 until mariadb -h db -u root -p"$DB_ROOT_PASS" -e "SELECT 1" &>/dev/null || mariadb -h db -u root -e "SELECT 1" &>/dev/null; do
@@ -12,11 +17,6 @@ if mariadb -h db -u root -p"$DB_ROOT_PASS" -e "SELECT 1" &>/dev/null; then
     echo "✅ Root password is already set. Proceeding..."
 else
     echo "⚠️ No root password detected. Setting a new password..."
-    
-    if [ -z "$DB_ROOT_PASS" ]; then
-        echo "❌ DB_ROOT_PASS is not set."
-        exit 1
-    fi
 
     mariadb -h db -u root <<EOF
 ALTER USER 'root'@'localhost' IDENTIFIED BY '$DB_ROOT_PASS';
@@ -87,12 +87,12 @@ else
 fi
 
 # ✅ Starting the server
-if [ "$DEBUG" = "false" ]; then
+if [ "$(echo "$DEBUG" | tr '[:upper:]' '[:lower:]')" = "false" ]; then
     echo "🧪 Collecting static files..."
     python3 manage.py collectstatic --noinput
 
     echo "🚀 Starting Gunicorn server..."
-    exec gunicorn madbot_api.asgi:application --bind 0.0.0.0:8000 --timeout 420 -k uvicorn.workers.UvicornWorker
+    exec gunicorn mousetube_api.asgi:application --bind 0.0.0.0:8000 --timeout 420 -k uvicorn.workers.UvicornWorker
 else
     echo "⚙️ Starting development server..."
     exec python3 manage.py runserver 0.0.0.0:8000

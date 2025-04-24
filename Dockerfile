@@ -16,12 +16,12 @@ RUN apk update && apk add --no-cache \
 WORKDIR /app
 
 COPY . .
-RUN if [ -f ./exported_data.json ]; then cp ./exported_data.json /app/exported_data.json; fi
 
 RUN pip install --upgrade pip
 RUN pip install -e .
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+RUN dos2unix /entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT [ "bash", "/entrypoint.sh" ]

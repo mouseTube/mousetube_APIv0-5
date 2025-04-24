@@ -44,7 +44,25 @@ SECRET_KEY = (
 )
 DEBUG = env("DEBUG", default=False)
 
-CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOWED_ORIGINS = [
+    "https://mousetube.france-bioinformatique.fr",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://mousetube.local",
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://mousetube.france-bioinformatique.fr",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://mousetube.local",
+]
+# CORS_ALLOW_CREDENTIALS = True
+
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 
 # Application definition
@@ -97,7 +115,7 @@ WSGI_APPLICATION = "mousetube_api.wsgi.application"
 
 
 # Database
-
+IS_DOCKER = env.bool("DJANGO_RUNNING_IN_DOCKER", default=False)
 DATABASES = {
     "default": {
         "ENGINE": env("DB_ENGINE", default="django.db.backends.mysql"),
@@ -105,7 +123,7 @@ DATABASES = {
         "USER": env("DB_USER", default=""),
         "PASSWORD": env("DB_PASSWORD", default=""),
         "HOST": env("DB_HOST", default="127.0.0.1"),
-        "PORT": env("DB_PORT", default="3306"),
+        "PORT": "3306" if IS_DOCKER else env("DB_PORT", default="3306"),
         "OPTIONS": {"ssl": env.bool("DB_SSL", default=False)},
     }
 }
@@ -145,12 +163,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+APPEND_SLASH = True
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,

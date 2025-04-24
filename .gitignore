@@ -25,3 +25,7 @@ logs/
 *.db-journal
 
 .ruff_cache
+
+ssl
+staticfiles
+media
