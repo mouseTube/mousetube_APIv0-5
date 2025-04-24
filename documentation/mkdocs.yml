@@ -1,0 +1,51 @@
+site_name: mouseTube API
+site_url: https://mousetube.fr
+theme:
+  name: material
+  language: en
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: "Roboto, sans-serif"
+    code: "Monaco, monospace"
+  features:
+    - navigation.tabs
+    - navigation.top
+    - search.highlight
+    - content.code.copy
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: 
+            - ../
+          options:
+            show_source: true
+            members:
+              - '__all__'
+
+markdown_extensions:
+  - toc:
+      permalink: true
+
+nav:
+  - Accueil: index.md
+  - Vocalizations: vocalizations.md
+  - Reference Python: api/python.md
+  - API REST: api/rest.md
+extra_css:
+  - stylesheets/custom.css
