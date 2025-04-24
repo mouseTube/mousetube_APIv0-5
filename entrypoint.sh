@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ -z "$DB_ROOT_PASS" ]; then
     echo "❌ DB_ROOT_PASS is not set."

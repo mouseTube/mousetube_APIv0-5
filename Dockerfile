@@ -22,5 +22,6 @@ RUN pip install -e .
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+RUN dos2unix /entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT [ "bash", "/entrypoint.sh" ]
