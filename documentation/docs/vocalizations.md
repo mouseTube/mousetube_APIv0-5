@@ -12,12 +12,12 @@ The **Vocalizations** page provides detailed information about various audio fil
 - **🔗 Bibliography**: A link to the reference or further reading.
 - **♂️/♀️ Sex**: The biological sex of the mouse (e.g., *1* for male).
 - **🔢 Group**: The group classification of the experiment (e.g., *Temporal structure*).
-- **🧬 Genotype**: The genetic makeup of the mouse (e.g., *+/*).
+- **🧬 Genotype**: The genetic makeup of the mouse (e.g., *+/+*).
 
 ### Protocol Information
 
 - **🔬 Protocol Name**: The name of the experiment (e.g., *Male-Female interaction*).
-- **📂 Number of Files**: The total number of related files, such as *6*.
+- **📂 Number of Files**: The total number of related files.
 - **📜 Description**: A brief description of the experimental setup.
 
 ### Experiment Details
