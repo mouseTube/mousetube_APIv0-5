@@ -121,3 +121,70 @@ class PageView(models.Model):
 
     def __str__(self):
         return f"{self.path} - {self.date} ({self.count})"
+
+
+class Contact(models.Model):
+    firstname = models.CharField(max_length=255, blank=True, null=True)
+    lastname = models.CharField(max_length=255, blank=True, null=True)
+    email = models.EmailField(max_length=255, blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    modified_at = models.DateTimeField(auto_now=True, null=True)
+    created_by = models.ForeignKey(User, null=True, related_name='contact_created_by',
+                                   on_delete=models.SET_NULL)
+
+    def __str__(self):
+        if self.firstname and self.lastname:
+            return self.firstname+" "+self.lastname
+        else:
+            return self.email
+
+    class Meta:
+        verbose_name = 'Contact'
+        verbose_name_plural = 'Contacts'
+
+
+class Reference(models.Model):
+    name_reference = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    url = models.URLField(max_length=255, blank=True, null=True)
+    doi = models.CharField(max_length=255, blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, null=True, related_name='reference_created_by',
+                                   on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return self.name_reference
+
+    class Meta:
+        verbose_name = 'Reference'
+        verbose_name_plural = 'References'
+
+
+class Software(models.Model):
+    CHOICES_SOFTWARE = (
+        ("acquisition", "acquisition"),
+        ("analysis", "analysis"),
+        ("acquisition and analysis", "acquisition and analysis")
+    )
+
+    software_name = models.CharField(max_length=255)
+    software_type = models.CharField(max_length=255, null=True, default="acquisition", choices=CHOICES_SOFTWARE)
+    made_by = models.TextField(default='', blank=True)
+    description = models.TextField(default='', blank=True)
+    technical_requirements = models.TextField(default='', blank=True)
+    references_and_tutorials = models.ManyToManyField(Reference, related_name='software', blank=True)
+    contacts = models.ManyToManyField(Contact, related_name='software_to_contact', blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, null=True, related_name='software_created_by', on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return self.software_name
+
+    class Meta:
+        verbose_name = 'Software'
+        verbose_name_plural = 'Software'
