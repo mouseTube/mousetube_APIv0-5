@@ -1,0 +1,13 @@
+.icon-small {
+    width: 24px !important;
+    height: 24px !important;
+    vertical-align: middle;
+  }
+
+  .icon-medium {
+    width: 240px !important;
+    display: block;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 10%;
+  }
