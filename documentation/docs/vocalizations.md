@@ -10,7 +10,7 @@ The **Vocalizations** page provides detailed information about various audio fil
 
 - **📚 Background**: Information about the mouse's genetic background (e.g., *C57BL/6J*).
 - **🔗 Bibliography**: A link to the reference or further reading.
-- **♂️/♀️ Sex**: The biological sex of the mouse (e.g., *1* for male).
+- **♂️/♀️ Sex**: The biological sex of the mouse.
 - **🔢 Group**: The group classification of the experiment (e.g., *Temporal structure*).
 - **🧬 Genotype**: The genetic makeup of the mouse (e.g., *+/+*).
 
