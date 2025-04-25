@@ -1,6 +1,10 @@
 # Welcome to the mouseTube documentation
 
-This documentation covers an introduction, a description of the application pages, and the backend API of the mouseTube project, which is based on Django.
+<div style="display: flex; justify-content: center;">
+  <img src="/images/logo_mousetube_big.png" alt="Rodent icon" class="icon-medium">
+</div>
+
+This documentation covers an introduction, a description of the vocalizations page, and the backend API of the mouseTube project, which is based on Django.
 
 - [Vocalizations](vocalizations.md)
 - [API Python](api/python.md)
