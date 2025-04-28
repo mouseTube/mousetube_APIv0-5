@@ -16,60 +16,60 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class StrainAdmin(admin.ModelAdmin):
-    list_display = ("name_strain", "background")
-    search_fields = ("name_strain",)
+    list_display = ("name", "background")
+    search_fields = ("name",)
     list_filter = ("background",)
 
 
 class SubjectAdmin(admin.ModelAdmin):
     list_display = (
-        "name_subject",
-        "strain_subject",
+        "name",
+        "strain",
         "user",
-        "sex_subject",
-        "genotype_subject",
+        "sex",
+        "genotype",
     )
     search_fields = (
-        "name_subject",
-        "strain_subject__name_strain",
+        "name",
+        "strain__name",
         "user__first_name_user",
     )
-    list_filter = ("strain_subject", "sex_subject", "user")
+    list_filter = ("strain", "sex", "user")
 
 
 class ProtocolAdmin(admin.ModelAdmin):
-    list_display = ("name_protocol", "number_files", "user")
-    search_fields = ("name_protocol", "user__first_name_user")
+    list_display = ("name", "number_files", "user")
+    search_fields = ("name", "user__first_name_user")
     list_filter = ("user",)
 
 
 class ExperimentAdmin(admin.ModelAdmin):
     list_display = (
-        "name_experiment",
+        "name",
         "protocol",
-        "date_experiment",
+        "date",
         "temperature",
         "light_cycle",
         "sampling_rate",
     )
-    search_fields = ("name_experiment", "protocol__name_protocol")
-    list_filter = ("protocol", "date_experiment")
+    search_fields = ("name", "protocol__name")
+    list_filter = ("protocol", "date")
 
 
 class FileAdmin(admin.ModelAdmin):
     list_display = (
         "experiment",
         "subject",
-        "file_number",
-        "link_file",
-        "doi_file",
+        "number",
+        "link",
+        "doi",
         "is_valid_link",
     )
     search_fields = (
-        "link_file",
-        "doi_file",
-        "experiment__name_experiment",
-        "subject__name_subject",
+        "link",
+        "doi",
+        "experiment__name",
+        "subject__name",
     )
     list_filter = ("is_valid_link", "experiment", "subject")
 

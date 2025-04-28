@@ -47,14 +47,14 @@ class Strain(models.Model):
     Represents a strain of a mouse.
 
     Attributes:
-        name_strain (str): The name of the strain.
+        name (str): The name of the strain.
         background (str): The genetic background of the strain.
-        biblio_strain (str, optional): Bibliographical references related to the strain.
+        bibliography (str, optional): Bibliographical references related to the strain.
     """
 
-    name_strain = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True)
     background = models.CharField(max_length=255)
-    biblio_strain = models.TextField(blank=True, null=True)
+    bibliography = models.TextField(blank=True, null=True)
 
     def __str__(self):
         """
@@ -63,7 +63,7 @@ class Strain(models.Model):
         Returns:
             str: The name of the strain.
         """
-        return self.name_strain
+        return self.name
 
     class Meta:
         verbose_name = "Strain"
@@ -75,22 +75,27 @@ class Subject(models.Model):
     Represents a subject (mouse) in the system.
 
     Attributes:
-        name_subject (str): The name of the subject.
-        strain_subject (Strain): The strain associated with the subject.
-        origin_subject (str, optional): The origin of the subject.
-        sex_subject (str, optional): The sex of the subject.
-        group_subject (str, optional): The group the subject belongs to.
-        genotype_subject (str, optional): The genotype of the subject.
+        name (str): The name of the subject.
+        strain (Strain): The strain associated with the subject.
+        origin (str, optional): The origin of the subject.
+        sex (str, optional): The sex of the subject.
+        group (str, optional): The group the subject belongs to.
+        genotype (str, optional): The genotype of the subject.
         treatment (str, optional): The treatment applied to the subject.
         user (User): The user associated with the subject.
     """
 
-    name_subject = models.CharField(max_length=255, unique=True)
-    strain_subject = models.ForeignKey(Strain, on_delete=models.CASCADE)
-    origin_subject = models.CharField(max_length=255, blank=True, null=True)
-    sex_subject = models.CharField(max_length=255, blank=True, null=True)
-    group_subject = models.CharField(max_length=255, blank=True, null=True)
-    genotype_subject = models.CharField(max_length=255, blank=True, null=True)
+    SEX_CHOICES = [
+        ('male', 'Male'),
+        ('female', 'Female'),
+    ]
+
+    name = models.CharField(max_length=255, unique=True)
+    strain = models.ForeignKey(Strain, on_delete=models.CASCADE)
+    origin = models.CharField(max_length=255, blank=True, null=True)
+    sex = models.CharField(max_length=6, choices=SEX_CHOICES, blank=True, null=True)
+    group = models.CharField(max_length=255, blank=True, null=True)
+    genotype = models.CharField(max_length=255, blank=True, null=True)
     treatment = models.CharField(max_length=255, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -101,7 +106,7 @@ class Subject(models.Model):
         Returns:
             str: The name of the subject.
         """
-        return self.name_subject
+        return self.name
 
     class Meta:
         verbose_name = "Subject"
@@ -113,15 +118,15 @@ class Protocol(models.Model):
     Represents an experimental protocol.
 
     Attributes:
-        name_protocol (str): The name of the protocol.
+        name (str): The name of the protocol.
         number_files (int, optional): The number of files associated with the protocol.
-        protocol_description (str): A description of the protocol.
+        description (str): A description of the protocol.
         user (User): The user associated with the protocol.
     """
 
-    name_protocol = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
     number_files = models.IntegerField(blank=True, null=True)
-    protocol_description = models.TextField(default="")
+    description = models.TextField(default="")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -131,7 +136,7 @@ class Protocol(models.Model):
         Returns:
             str: The name of the protocol.
         """
-        return self.name_protocol
+        return self.name
 
     class Meta:
         verbose_name = "Protocol"
@@ -143,10 +148,10 @@ class Experiment(models.Model):
     Represents an experiment.
 
     Attributes:
-        name_experiment (str): The name of the experiment.
+        name (str): The name of the experiment.
         protocol (Protocol): The protocol associated with the experiment.
         group_subject (str, optional): The group of subjects involved in the experiment.
-        date_experiment (date, optional): The date of the experiment.
+        date (date, optional): The date of the experiment.
         temperature (str, optional): The temperature during the experiment.
         light_cycle (str, optional): The light cycle during the experiment.
         microphone (str, optional): The microphone used in the experiment.
@@ -157,10 +162,10 @@ class Experiment(models.Model):
         laboratory (str, optional): The laboratory where the experiment was conducted.
     """
 
-    name_experiment = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True)
     protocol = models.ForeignKey(Protocol, on_delete=models.CASCADE)
     group_subject = models.CharField(max_length=255, blank=True, null=True)
-    date_experiment = models.DateField(blank=True, null=True)
+    date = models.DateField(blank=True, null=True)
     temperature = models.CharField(max_length=255, blank=True, null=True)
     light_cycle = models.CharField(max_length=255, blank=True, null=True)
     microphone = models.CharField(max_length=255, blank=True, null=True)
@@ -177,7 +182,7 @@ class Experiment(models.Model):
         Returns:
             str: The name of the experiment.
         """
-        return self.name_experiment
+        return self.name
 
     class Meta:
         verbose_name = "Experiment"
@@ -191,10 +196,10 @@ class File(models.Model):
     Attributes:
         experiment (Experiment, optional): The experiment associated with the file.
         subject (Subject, optional): The subject associated with the file.
-        file_number (int, optional): The number of the file.
-        link_file (str, optional): The URL link to the file.
-        notes_file (str, optional): Notes about the file.
-        doi_file (str, optional): The DOI of the file.
+        number (int, optional): The number of the file.
+        link (str, optional): The URL link to the file.
+        notes (str, optional): Notes about the file.
+        doi (str, optional): The DOI of the file.
         is_valid_link (bool): Whether the link is valid.
     """
 
@@ -204,10 +209,10 @@ class File(models.Model):
     subject = models.ForeignKey(
         Subject, on_delete=models.CASCADE, blank=True, null=True
     )
-    file_number = models.IntegerField(blank=True, null=True)
-    link_file = models.URLField(blank=True, null=True)
-    notes_file = models.TextField(blank=True, null=True)
-    doi_file = models.CharField(max_length=255, blank=True, null=True)
+    number = models.IntegerField(blank=True, null=True)
+    link = models.URLField(blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+    doi = models.CharField(max_length=255, blank=True, null=True)
     is_valid_link = models.BooleanField(default=False)
 
     def __str__(self):
@@ -217,7 +222,7 @@ class File(models.Model):
         Returns:
             str: The URL link to the file.
         """
-        return self.link_file
+        return self.link
 
     class Meta:
         verbose_name = "File"

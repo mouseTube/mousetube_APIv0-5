@@ -92,11 +92,11 @@ class FileAPIView(APIView):
         filter_query = request.GET.get("filter", "")
         files = File.objects.all()
         if search_query:
-            file_fields = ["file_number", "link_file", "notes_file", "doi_file"]
+            file_fields = ["number", "link", "notes", "doi"]
 
             # Fields for Experiment model
             experiment_fields = [
-                "name_experiment",
+                "name",
                 "laboratory",
                 "group_subject",
                 "temperature",
@@ -106,16 +106,16 @@ class FileAPIView(APIView):
                 "acquisition_software",
                 "sampling_rate",
                 "bit_depth",
-                "date_experiment",
+                "date",
             ]
 
             # Fields for Subject model
             subject_fields = [
-                "name_subject",
-                "origin_subject",
-                "sex_subject",
-                "group_subject",
-                "genotype_subject",
+                "name",
+                "origin",
+                "sex",
+                "group",
+                "genotype",
                 "treatment",
             ]
 
@@ -131,10 +131,10 @@ class FileAPIView(APIView):
             ]
 
             # Fields for Strain model (related to Subject)
-            strain_fields = ["name_strain", "background", "biblio_strain"]
+            strain_fields = ["name", "background", "bibliography"]
 
             # Fields for Protocol model (related to Experiment)
-            protocol_fields = ["name_protocol", "number_files", "protocol_description"]
+            protocol_fields = ["name", "number_files", "description"]
 
             # Build dynamic Q objects for File fields
             file_query = Q()
@@ -162,7 +162,7 @@ class FileAPIView(APIView):
             strain_query = Q()
             for field in strain_fields:
                 strain_query |= Q(
-                    **{f"subject__strain_subject__{field}__icontains": search_query}
+                    **{f"subject__strain__{field}__icontains": search_query}
                 )
 
             # Build dynamic Q objects for Protocol fields (via Experiment)
@@ -194,7 +194,7 @@ class FileAPIView(APIView):
                     files = files.filter(is_valid_link=True)
 
         # Add explicit ordering to avoid UnorderedObjectListWarning
-        files = files.order_by("link_file")
+        files = files.order_by("link")
         paginator = FilePagination()
         paginated_files = paginator.paginate_queryset(files, request)
         serializer = self.serializer_class(paginated_files, many=True)
