@@ -86,8 +86,8 @@ class Subject(models.Model):
     """
 
     SEX_CHOICES = [
-        ('male', 'Male'),
-        ('female', 'Female'),
+        ("male", "Male"),
+        ("female", "Female"),
     ]
 
     name = models.CharField(max_length=255, unique=True)
