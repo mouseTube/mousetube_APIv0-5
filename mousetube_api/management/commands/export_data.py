@@ -10,7 +10,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         users = User.objects.all()
         strains = Strain.objects.all()
-        subjects = Subject.objects.select_related("strain_subject").all()
+        subjects = Subject.objects.select_related("strain").all()
         protocols = Protocol.objects.all()
         experiments = Experiment.objects.select_related("protocol").all()
         files = File.objects.select_related("experiment", "subject").all()

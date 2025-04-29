@@ -1,11 +1,12 @@
-"""
-Created by Nicolas Torquet at 10/01/2025
-torquetn@igbmc.fr
-Copyright: CNRS - INSERM - UNISTRA - ICS - IGBMC
-CNRS - Mouse Clinical Institute
-PHENOMIN, CNRS UMR7104, INSERM U964, Université de Strasbourg
-Code under GPL v3.0 licence
-"""
+# Created by Nicolas Torquet at 10/01/2025
+# torquetn@igbmc.fr
+# Modified by Laurent Bouri 04/2025
+# bouril@igbmc.fr
+# Copyright: CNRS - INSERM - UNISTRA - ICS - IGBMC
+# CNRS - Mouse Clinical Institute
+# PHENOMIN, CNRS UMR7104, INSERM U964, Université de Strasbourg
+# Code under GPL v3.0 licence
+
 
 from mousetube_api.models import (
     User,
@@ -33,7 +34,7 @@ class StrainSerializer(serializers.ModelSerializer):
 
 class SubjectSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    strain_subject = StrainSerializer(read_only=True)
+    strain = StrainSerializer(read_only=True)
 
     class Meta:
         model = Subject
