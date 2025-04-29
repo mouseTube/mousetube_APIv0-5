@@ -25,7 +25,7 @@ from .views import (
     ProtocolAPIView,
     ExperimentAPIView,
     FileAPIView,
-    FileDetailAPIView
+    FileDetailAPIView,
 )
 from .views import TrackPageView
 from django.views.static import serve
@@ -43,8 +43,8 @@ urlpatterns = [
     path("api/subject/", SubjectAPIView.as_view()),
     path("api/protocol/", ProtocolAPIView.as_view()),
     path("api/experiment/", ExperimentAPIView.as_view()),
-    path('api/file/', FileAPIView.as_view(), name='file-list'),  
-    path('api/file/<int:pk>/', FileDetailAPIView.as_view(), name='file-detail'),
+    path("api/file/", FileAPIView.as_view(), name="file-list"),
+    path("api/file/<int:pk>/", FileDetailAPIView.as_view(), name="file-detail"),
     path("api/track-page/", TrackPageView.as_view(), name="track-page"),
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
