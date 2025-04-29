@@ -25,6 +25,7 @@ from .views import (
     ProtocolAPIView,
     ExperimentAPIView,
     FileAPIView,
+    SoftwareAPIView,
 )
 from .views import TrackPageView
 from django.views.static import serve
@@ -43,6 +44,7 @@ urlpatterns = [
     path("api/protocol/", ProtocolAPIView.as_view()),
     path("api/experiment/", ExperimentAPIView.as_view()),
     path("api/file/", FileAPIView.as_view()),
+    path("api/software/", SoftwareAPIView.as_view()),
     path("api/track-page/", TrackPageView.as_view(), name="track-page"),
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
