@@ -201,6 +201,7 @@ class File(models.Model):
         notes (str, optional): Notes about the file.
         doi (str, optional): The DOI of the file.
         is_valid_link (bool): Whether the link is valid.
+        donwloads (int): The number of downloads for the file.
     """
 
     experiment = models.ForeignKey(
@@ -214,6 +215,7 @@ class File(models.Model):
     notes = models.TextField(blank=True, null=True)
     doi = models.CharField(max_length=255, blank=True, null=True)
     is_valid_link = models.BooleanField(default=False)
+    downloads = models.IntegerField(default=0)
 
     def __str__(self):
         """
