@@ -14,10 +14,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         logger.info("Starting dead link check...")
 
-        files = File.objects.exclude(link_file__isnull=True).exclude(link_file="")
+        files = File.objects.exclude(link__isnull=True).exclude(link="")
 
         for file in files:
-            url = file.link_file
+            url = file.link
             parsed = urlparse(url)
 
             # Check if the URL is valid
@@ -62,7 +62,7 @@ class Command(BaseCommand):
                     file.is_valid_link = False
                     file.save()
 
-        files = File.objects.exclude(link_file__isnull=True).exclude(link_file="")
+        files = File.objects.exclude(link__isnull=True).exclude(link="")
         valid_files = files.filter(is_valid_link=True)
         invalid_files = files.filter(is_valid_link=False)
         logger.info(f"Total files: {files.count()}")
