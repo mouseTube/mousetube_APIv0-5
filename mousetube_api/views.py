@@ -21,7 +21,16 @@ from .serializers import (
     TrackPageSerializer,
     SoftwareSerializer,
 )
-from .models import User, Strain, Subject, Protocol, Experiment, File, PageView, Software
+from .models import (
+    User,
+    Strain,
+    Subject,
+    Protocol,
+    Experiment,
+    File,
+    PageView,
+    Software,
+)
 from django.db.models import Q
 from rest_framework import status
 from django.utils.timezone import now
@@ -278,7 +287,9 @@ class SoftwareAPIView(APIView):
                 user_query |= Q(**{f"users__{field}__icontains": search_query})
 
             # Combine all
-            softwares = softwares.filter(software_query | reference_query | user_query).distinct()
+            softwares = softwares.filter(
+                software_query | reference_query | user_query
+            ).distinct()
 
         ALLOWED_FILTERS = ["acquisition", "analysis", "acquisition and analysis"]
 

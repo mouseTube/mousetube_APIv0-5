@@ -261,17 +261,18 @@ class PageView(models.Model):
 class Reference(models.Model):
     """
     Model representing a reference (e.g., research paper, article, or website).
-    
+
     Attributes:
         name_reference (str): The name of the reference (e.g., title of a paper).
         description (str): A detailed description of the reference.
         url (str): The URL pointing to the reference, if available.
         doi (str): The DOI (Digital Object Identifier) of the reference, if applicable.
-    
+
     Meta:
         verbose_name (str): Human-readable name for the model.
         verbose_name_plural (str): Plural version of the human-readable name.
     """
+
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     url = models.URLField(max_length=255, blank=True, null=True)
@@ -281,14 +282,14 @@ class Reference(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = 'Reference'
-        verbose_name_plural = 'References'
+        verbose_name = "Reference"
+        verbose_name_plural = "References"
 
 
 class Software(models.Model):
     """
     Model representing a software tool, which can be used for acquisition, analysis, or both.
-    
+
     Attributes:
         software_name (str): The name of the software tool.
         software_type (str): The type of the software, categorized as 'acquisition', 'analysis', or both.
@@ -297,28 +298,31 @@ class Software(models.Model):
         technical_requirements (str): The technical requirements for using the software.
         references (ManyToManyField): A list of references and tutorials related to the software.
         users (ManyToManyField): A list of users who are associated with the software.
-    
+
     Meta:
         verbose_name (str): Human-readable name for the model.
         verbose_name_plural (str): Plural version of the human-readable name.
     """
+
     CHOICES_SOFTWARE = (
         ("acquisition", "acquisition"),
         ("analysis", "analysis"),
-        ("acquisition and analysis", "acquisition and analysis")
+        ("acquisition and analysis", "acquisition and analysis"),
     )
 
     name = models.CharField(max_length=255)
-    type = models.CharField(max_length=255, null=True, default="acquisition", choices=CHOICES_SOFTWARE)
-    made_by = models.TextField(default='', blank=True)
-    description = models.TextField(default='', blank=True)
-    technical_requirements = models.TextField(default='', blank=True)
-    references = models.ManyToManyField(Reference, related_name='software', blank=True)
-    users = models.ManyToManyField(User, related_name='software_to_user', blank=True)
+    type = models.CharField(
+        max_length=255, null=True, default="acquisition", choices=CHOICES_SOFTWARE
+    )
+    made_by = models.TextField(default="", blank=True)
+    description = models.TextField(default="", blank=True)
+    technical_requirements = models.TextField(default="", blank=True)
+    references = models.ManyToManyField(Reference, related_name="software", blank=True)
+    users = models.ManyToManyField(User, related_name="software_to_user", blank=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = 'Software'
-        verbose_name_plural = 'Software'
+        verbose_name = "Software"
+        verbose_name_plural = "Software"

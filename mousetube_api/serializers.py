@@ -17,7 +17,7 @@ from mousetube_api.models import (
     File,
     PageView,
     Software,
-    Reference
+    Reference,
 )
 from rest_framework import serializers
 
@@ -72,6 +72,7 @@ class ReferenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reference
         fields = "__all__"
+
 
 class SoftwareSerializer(serializers.ModelSerializer):
     users = UserSerializer(many=True, read_only=True)
