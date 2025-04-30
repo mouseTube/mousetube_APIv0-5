@@ -238,15 +238,15 @@ class SoftwareAPIView(APIView):
 
         if search_query:
             software_fields = [
-                "software_name",
-                "software_type",
+                "name",
+                "type",
                 "made_by",
                 "description",
                 "technical_requirements",
             ]
 
             reference_fields = [
-                "name_reference",
+                "name",
                 "description",
                 "url",
                 "doi",
@@ -270,7 +270,7 @@ class SoftwareAPIView(APIView):
             reference_query = Q()
             for field in reference_fields:
                 reference_query |= Q(
-                    **{f"references_and_tutorials__{field}__icontains": search_query}
+                    **{f"references__{field}__icontains": search_query}
                 )
 
             user_query = Q()
@@ -280,19 +280,12 @@ class SoftwareAPIView(APIView):
             # Combine all
             softwares = softwares.filter(software_query | reference_query | user_query).distinct()
 
-        ALLOWED_FILTERS = ["software_type"]
+        ALLOWED_FILTERS = ["acquisition", "analysis", "acquisition and analysis"]
 
-        if filter_query:
-            for filter_name in filter_query.split(","):
-                if filter_name not in ALLOWED_FILTERS:
-                    continue
+        if filter_query and filter_query in ALLOWED_FILTERS:
+            softwares = softwares.filter(type=filter_query)
 
-                if filter_name == "software_type":
-                    value = request.GET.get("software_type")
-                    if value:
-                        softwares = softwares.filter(software_type=value)
-
-        softwares = softwares.order_by("software_name")
+        softwares = softwares.order_by("name")
         paginator = FilePagination()
         paginated_softwares = paginator.paginate_queryset(softwares, request)
         serializer = self.serializer_class(paginated_softwares, many=True)
