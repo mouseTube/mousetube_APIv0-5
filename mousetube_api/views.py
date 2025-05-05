@@ -19,8 +19,18 @@ from .serializers import (
     FileSerializer,
     PageViewSerializer,
     TrackPageSerializer,
+    SoftwareSerializer,
 )
-from .models import User, Strain, Subject, Protocol, Experiment, File, PageView
+from .models import (
+    User,
+    Strain,
+    Subject,
+    Protocol,
+    Experiment,
+    File,
+    PageView,
+    Software,
+)
 from django.db.models import Q
 from rest_framework import status
 from django.utils.timezone import now
@@ -225,6 +235,72 @@ class FileDetailAPIView(APIView):
         return Response(
             {"detail": "Invalid request body"}, status=status.HTTP_400_BAD_REQUEST
         )
+
+
+class SoftwareAPIView(APIView):
+    serializer_class = SoftwareSerializer
+
+    def get(self, request, *args, **kwargs):
+        search_query = request.GET.get("search", "")
+        filter_query = request.GET.get("filter", "")
+        softwares = Software.objects.all()
+
+        if search_query:
+            software_fields = [
+                "name",
+                "type",
+                "made_by",
+                "description",
+                "technical_requirements",
+            ]
+
+            reference_fields = [
+                "name",
+                "description",
+                "url",
+                "doi",
+            ]
+
+            user_fields = [
+                "name_user",
+                "first_name_user",
+                "email_user",
+                "unit_user",
+                "institution_user",
+                "address_user",
+                "country_user",
+            ]
+
+            # Build Q objects
+            software_query = Q()
+            for field in software_fields:
+                software_query |= Q(**{f"{field}__icontains": search_query})
+
+            reference_query = Q()
+            for field in reference_fields:
+                reference_query |= Q(
+                    **{f"references__{field}__icontains": search_query}
+                )
+
+            user_query = Q()
+            for field in user_fields:
+                user_query |= Q(**{f"users__{field}__icontains": search_query})
+
+            # Combine all
+            softwares = softwares.filter(
+                software_query | reference_query | user_query
+            ).distinct()
+
+        ALLOWED_FILTERS = ["acquisition", "analysis", "acquisition and analysis"]
+
+        if filter_query and filter_query in ALLOWED_FILTERS:
+            softwares = softwares.filter(type=filter_query)
+
+        softwares = softwares.order_by("name")
+        paginator = FilePagination()
+        paginated_softwares = paginator.paginate_queryset(softwares, request)
+        serializer = self.serializer_class(paginated_softwares, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class TrackPageView(APIView):

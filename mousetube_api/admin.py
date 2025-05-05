@@ -1,5 +1,14 @@
 from django.contrib import admin
-from .models import User, Strain, Subject, Protocol, Experiment, File
+from .models import (
+    User,
+    Strain,
+    Subject,
+    Protocol,
+    Experiment,
+    File,
+    Software,
+    Reference,
+)
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -74,9 +83,44 @@ class FileAdmin(admin.ModelAdmin):
     list_filter = ("is_valid_link", "experiment", "subject")
 
 
+class SoftwareAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "type",
+        "made_by",
+        "description",
+        "technical_requirements",
+    )
+    search_fields = (
+        "name",
+        "type",
+        "made_by",
+        "description",
+        "technical_requirements",
+    )
+    filter_horizontal = ("references", "users")
+
+
+class ReferenceAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "description",
+        "url",
+        "doi",
+    )
+    search_fields = (
+        "name",
+        "description",
+        "url",
+        "doi",
+    )
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Strain, StrainAdmin)
 admin.site.register(Subject, SubjectAdmin)
 admin.site.register(Protocol, ProtocolAdmin)
 admin.site.register(Experiment, ExperimentAdmin)
 admin.site.register(File, FileAdmin)
+admin.site.register(Software, SoftwareAdmin)
+admin.site.register(Reference, ReferenceAdmin)
