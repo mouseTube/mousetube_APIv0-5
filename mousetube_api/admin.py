@@ -1,5 +1,14 @@
 from django.contrib import admin
-from .models import User, Strain, Subject, Protocol, Experiment, File, Software, Reference
+from .models import (
+    User,
+    Strain,
+    Subject,
+    Protocol,
+    Experiment,
+    File,
+    Software,
+    Reference,
+)
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -73,6 +82,7 @@ class FileAdmin(admin.ModelAdmin):
     )
     list_filter = ("is_valid_link", "experiment", "subject")
 
+
 class SoftwareAdmin(admin.ModelAdmin):
     list_display = (
         "name",
@@ -89,6 +99,7 @@ class SoftwareAdmin(admin.ModelAdmin):
         "technical_requirements",
     )
     filter_horizontal = ("references", "users")
+
 
 class ReferenceAdmin(admin.ModelAdmin):
     list_display = (
