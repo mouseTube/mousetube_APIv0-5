@@ -46,17 +46,23 @@ DEBUG = env("DEBUG", default=False)
 
 # CORS_ORIGIN_ALLOW_ALL = True
 
-CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "https://mousetube.local",
-])
+CORS_ALLOWED_ORIGINS = env.list(
+    "CORS_ALLOWED_ORIGINS",
+    default=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://mousetube.local",
+    ],
+)
 
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "https://mousetube.local",
-])
+CSRF_TRUSTED_ORIGINS = env.list(
+    "CSRF_TRUSTED_ORIGINS",
+    default=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://mousetube.local",
+    ],
+)
 CORS_ALLOW_CREDENTIALS = True
 X_FRAME_OPTIONS = "ALLOW-FROM http://127.0.0.1:8001"
 
@@ -65,7 +71,9 @@ SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 
 USE_X_FORWARDED_HOST = env.bool("USE_X_FORWARDED_HOST", default=False)
-SECURE_PROXY_SSL_HEADER = env.tuple("SECURE_PROXY_SSL_HEADER", default=("HTTP_X_FORWARDED_PROTO", "https"))
+SECURE_PROXY_SSL_HEADER = env.tuple(
+    "SECURE_PROXY_SSL_HEADER", default=("HTTP_X_FORWARDED_PROTO", "https")
+)
 
 # Application definition
 
