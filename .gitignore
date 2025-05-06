@@ -29,3 +29,6 @@ logs/
 ssl
 staticfiles
 media
+
+downloaded_audio
+audio_images
