@@ -43,6 +43,12 @@ class Command(BaseCommand):
             help='Generate spectrogram image only if a signal is detected (10s after detection)'
         )
 
+    @staticmethod
+    def is_valid_audio_file(filename):
+        VALID_EXTENSIONS = {'.wav', '.wave', '.flac', '.mp3', '.ogg', '.m4a', '.aiff', '.aif'}
+        ext = os.path.splitext(filename)[1].lower()
+        return ext in VALID_EXTENSIONS
+
     def handle(self, *args, **options):
         logger.info("Starting audio spectrogram generation...")
 
@@ -67,6 +73,9 @@ class Command(BaseCommand):
             # Process local audio files from the downloaded_audio directory
             files = [f for f in os.listdir(AUDIO_DIR) if os.path.isfile(os.path.join(AUDIO_DIR, f))]
             for filename in files:
+                if not self.is_valid_audio_file(filename):
+                    logger.info(f"Skipping unsupported audio file format: {filename}")
+                    continue
                 self.generate_spectrogram(filename, os.path.join(AUDIO_DIR, filename), sr=300000,
                                           n_fft=n_fft, hop_length=hop_length, filtered_only=filtered_only)
         else:
@@ -96,6 +105,10 @@ class Command(BaseCommand):
 
                 filename = os.path.basename(parsed.path)
                 local_audio_path = os.path.join(AUDIO_DIR, filename)
+
+                if not self.is_valid_audio_file(filename):
+                    logger.info(f"Skipping unsupported audio file format: {filename}")
+                    continue
 
                 try:
                     # Download the audio file
