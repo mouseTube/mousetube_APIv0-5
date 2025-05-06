@@ -40,7 +40,7 @@ from django.core.management import call_command
 from drf_spectacular.utils import extend_schema
 from django.shortcuts import render
 from django.conf import settings
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import OpenApiParameter
 import os
 
 
