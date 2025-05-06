@@ -40,6 +40,7 @@ from django.core.management import call_command
 from drf_spectacular.utils import extend_schema
 from django.shortcuts import render
 from django.conf import settings
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 import os
 
 
@@ -96,6 +97,13 @@ class ExperimentAPIView(APIView):
 
 class FileAPIView(APIView):
     serializer_class = FileSerializer
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name='search', description='text search', required=False, type=str),
+            OpenApiParameter(name='filter', description='filter', required=False, type=str),
+        ]
+    )
 
     def get(self, request, *args, **kwargs):
         search_query = request.GET.get("search", "")
@@ -212,6 +220,8 @@ class FileAPIView(APIView):
 
 
 class FileDetailAPIView(APIView):
+
+    @extend_schema(exclude=True)
     def patch(self, request, *args, **kwargs):
         try:
             file = File.objects.get(pk=kwargs["pk"])
@@ -240,6 +250,12 @@ class FileDetailAPIView(APIView):
 class SoftwareAPIView(APIView):
     serializer_class = SoftwareSerializer
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name='search', description='text search', required=False, type=str),
+            OpenApiParameter(name='filter', description='filter', required=False, type=str),
+        ]
+    )
     def get(self, request, *args, **kwargs):
         search_query = request.GET.get("search", "")
         filter_query = request.GET.get("filter", "")
