@@ -20,64 +20,86 @@ IMG_DIR = os.path.join(settings.BASE_DIR, "audio_images")
 os.makedirs(AUDIO_DIR, exist_ok=True)
 os.makedirs(IMG_DIR, exist_ok=True)
 
+
 class Command(BaseCommand):
     help = "Download audio and generate spectrogram images (log scale)"
 
     def add_arguments(self, parser):
         # Add command line arguments
         parser.add_argument(
-            '--quality',
+            "--quality",
             type=str,
-            choices=['low', 'medium', 'high'],
-            default='medium',
-            help='Spectrogram quality: low (faster), medium (default), high (slower but detailed)'
+            choices=["low", "medium", "high"],
+            default="medium",
+            help="Spectrogram quality: low (faster), medium (default), high (slower but detailed)",
         )
         parser.add_argument(
-            '--local',
-            action='store_true',
-            help='Process only local audio files already in the downloaded_audio directory'
+            "--local",
+            action="store_true",
+            help="Process only local audio files already in the downloaded_audio directory",
         )
         parser.add_argument(
-            '--filtered-only',
-            action='store_true',
-            help='Generate spectrogram image only if a signal is detected (10s after detection)'
+            "--filtered-only",
+            action="store_true",
+            help="Generate spectrogram image only if a signal is detected (10s after detection)",
         )
 
     @staticmethod
     def is_valid_audio_file(filename):
-        VALID_EXTENSIONS = {'.wav', '.wave', '.flac', '.mp3', '.ogg', '.m4a', '.aiff', '.aif'}
+        VALID_EXTENSIONS = {
+            ".wav",
+            ".wave",
+            ".flac",
+            ".mp3",
+            ".ogg",
+            ".m4a",
+            ".aiff",
+            ".aif",
+        }
         ext = os.path.splitext(filename)[1].lower()
         return ext in VALID_EXTENSIONS
 
     def handle(self, *args, **options):
         logger.info("Starting audio spectrogram generation...")
 
-        quality = options['quality']
-        local_mode = options['local']
-        filtered_only = options['filtered_only']
+        quality = options["quality"]
+        local_mode = options["local"]
+        filtered_only = options["filtered_only"]
 
         # Set FFT and hop length based on the quality parameter
-        if quality == 'low':
+        if quality == "low":
             n_fft = 512
             hop_length = 256
-        elif quality == 'high':
+        elif quality == "high":
             n_fft = 2048
             hop_length = 512
         else:  # medium
             n_fft = 1024
             hop_length = 256
 
-        logger.info(f"Using quality '{quality}': n_fft={n_fft}, hop_length={hop_length}")
+        logger.info(
+            f"Using quality '{quality}': n_fft={n_fft}, hop_length={hop_length}"
+        )
 
         if local_mode:
             # Process local audio files from the downloaded_audio directory
-            files = [f for f in os.listdir(AUDIO_DIR) if os.path.isfile(os.path.join(AUDIO_DIR, f))]
+            files = [
+                f
+                for f in os.listdir(AUDIO_DIR)
+                if os.path.isfile(os.path.join(AUDIO_DIR, f))
+            ]
             for filename in files:
                 if not self.is_valid_audio_file(filename):
                     logger.info(f"Skipping unsupported audio file format: {filename}")
                     continue
-                self.generate_spectrogram(filename, os.path.join(AUDIO_DIR, filename), sr=300000,
-                                          n_fft=n_fft, hop_length=hop_length, filtered_only=filtered_only)
+                self.generate_spectrogram(
+                    filename,
+                    os.path.join(AUDIO_DIR, filename),
+                    sr=300000,
+                    n_fft=n_fft,
+                    hop_length=hop_length,
+                    filtered_only=filtered_only,
+                )
         else:
             # Process files from the database if the local option is not specified
             for file in File.objects.exclude(link__isnull=True).exclude(link=""):
@@ -113,28 +135,38 @@ class Command(BaseCommand):
                 try:
                     # Download the audio file
                     r = requests.get(url, stream=True, timeout=10)
-                    with open(local_audio_path, 'wb') as f:
+                    with open(local_audio_path, "wb") as f:
                         for chunk in r.iter_content(chunk_size=8192):
                             f.write(chunk)
                     logger.info(f"Downloaded {filename}")
 
                     # Generate the spectrogram for the downloaded audio
-                    self.generate_spectrogram(filename, local_audio_path, sr=300000,
-                                              n_fft=n_fft, hop_length=hop_length, filtered_only=filtered_only)
+                    self.generate_spectrogram(
+                        filename,
+                        local_audio_path,
+                        sr=300000,
+                        n_fft=n_fft,
+                        hop_length=hop_length,
+                        filtered_only=filtered_only,
+                    )
 
-                    os.remove(local_audio_path)  # Remove the local audio file after processing
+                    os.remove(
+                        local_audio_path
+                    )  # Remove the local audio file after processing
                     logger.info(f"Deleted audio file: {filename}")
                 except Exception as e:
                     logger.error(f"Failed to download or process {url}: {e}")
                     continue
 
-    def generate_spectrogram(self, filename, local_audio_path, sr, n_fft, hop_length, filtered_only):
+    def generate_spectrogram(
+        self, filename, local_audio_path, sr, n_fft, hop_length, filtered_only
+    ):
         try:
             logger.info(f"Analyzing {filename}...")
 
             # Load the audio file
             y, sr = librosa.load(local_audio_path, sr=sr, mono=True)
-            logger.info(f"Audio loaded: {filename} (duration: {len(y)/sr:.2f}s)")
+            logger.info(f"Audio loaded: {filename} (duration: {len(y) / sr:.2f}s)")
 
             # Compute the short-time Fourier transform (STFT)
             S = np.abs(librosa.stft(y, n_fft=n_fft, hop_length=hop_length))
@@ -150,7 +182,9 @@ class Command(BaseCommand):
             smoothed_power = uniform_filter1d(band_power, size=7)
             threshold_db = np.median(smoothed_power) + 3
 
-            logger.info(f"Median power: {np.median(smoothed_power):.2f} dB, Threshold: {threshold_db:.2f} dB")
+            logger.info(
+                f"Median power: {np.median(smoothed_power):.2f} dB, Threshold: {threshold_db:.2f} dB"
+            )
             logger.info(f"Max power: {np.max(smoothed_power):.2f} dB")
 
             # Identify where the power exceeds the threshold
@@ -172,25 +206,37 @@ class Command(BaseCommand):
             # If no signal is detected and filtered-only mode is active, skip the spectrogram generation
             if start_frame is None:
                 if filtered_only:
-                    logger.info(f"No signal detected in {filename}, spectrogram not generated (--filtered-only enabled).")
+                    logger.info(
+                        f"No signal detected in {filename}, spectrogram not generated (--filtered-only enabled)."
+                    )
                     return
                 else:
-                    logger.info(f"No signal detected in {filename}, generating full spectrogram.")
+                    logger.info(
+                        f"No signal detected in {filename}, generating full spectrogram."
+                    )
                     y_segment = y
                     start_time = 0
             else:
                 start_time = start_frame * hop_length / sr
                 if filtered_only and (len(y) / sr) >= 10:
-                    logger.info(f"Signal detected at {start_time:.2f}s in {filename} (generating segment only)")
-                    y_segment = y[int((start_time-1) * sr):int((start_time + 9) * sr)]
+                    logger.info(
+                        f"Signal detected at {start_time:.2f}s in {filename} (generating segment only)"
+                    )
+                    y_segment = y[
+                        int((start_time - 1) * sr) : int((start_time + 9) * sr)
+                    ]
                 else:
-                    logger.info(f"Signal detected at {start_time:.2f}s in {filename} (generating full spectrogram)")
+                    logger.info(
+                        f"Signal detected at {start_time:.2f}s in {filename} (generating full spectrogram)"
+                    )
                     y_segment = y
                     start_time = 0
 
             # If the segment is empty, skip the spectrogram generation
             if len(y_segment) == 0:
-                logger.warning(f"Empty segment, unable to generate image for {filename}")
+                logger.warning(
+                    f"Empty segment, unable to generate image for {filename}"
+                )
                 return
 
             # Compute the STFT of the segment to generate the spectrogram
@@ -200,11 +246,15 @@ class Command(BaseCommand):
             # Generate the spectrogram plot
             plt.figure(figsize=(10, 4))
             librosa.display.specshow(
-                S_dB, sr=sr, hop_length=hop_length, x_axis='time', y_axis='linear',
-                x_coords=np.arange(S_dB.shape[1]) * hop_length / sr + start_time
+                S_dB,
+                sr=sr,
+                hop_length=hop_length,
+                x_axis="time",
+                y_axis="linear",
+                x_coords=np.arange(S_dB.shape[1]) * hop_length / sr + start_time,
             )
             plt.ylim(freq_min, freq_max)
-            
+
             # Set labels for the axes
             plt.ylabel("Frequency (Hz)")  # Label for the y-axis
             plt.xlabel("Time (s)")  # Label for the x-axis
