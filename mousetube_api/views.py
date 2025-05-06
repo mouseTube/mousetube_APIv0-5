@@ -100,11 +100,14 @@ class FileAPIView(APIView):
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(name='search', description='text search', required=False, type=str),
-            OpenApiParameter(name='filter', description='filter', required=False, type=str),
+            OpenApiParameter(
+                name="search", description="text search", required=False, type=str
+            ),
+            OpenApiParameter(
+                name="filter", description="filter", required=False, type=str
+            ),
         ]
     )
-
     def get(self, request, *args, **kwargs):
         search_query = request.GET.get("search", "")
         filter_query = request.GET.get("filter", "")
@@ -220,7 +223,6 @@ class FileAPIView(APIView):
 
 
 class FileDetailAPIView(APIView):
-
     @extend_schema(exclude=True)
     def patch(self, request, *args, **kwargs):
         try:
@@ -252,8 +254,12 @@ class SoftwareAPIView(APIView):
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(name='search', description='text search', required=False, type=str),
-            OpenApiParameter(name='filter', description='filter', required=False, type=str),
+            OpenApiParameter(
+                name="search", description="text search", required=False, type=str
+            ),
+            OpenApiParameter(
+                name="filter", description="filter", required=False, type=str
+            ),
         ]
     )
     def get(self, request, *args, **kwargs):
