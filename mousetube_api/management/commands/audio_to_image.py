@@ -11,6 +11,7 @@ from mousetube_api.models import File
 from django.conf import settings
 import logging
 from scipy.ndimage import uniform_filter1d, maximum_filter1d
+from scipy.signal import find_peaks
 
 logger = logging.getLogger(__name__)
 
@@ -216,12 +217,19 @@ class Command(BaseCommand):
             above_thresh = filtered_power > threshold_db
             min_duration_frames = int(0.03 * sr / hop_length)
 
-            # Check if there is a segment with enough power for detection
+            peaks, props = find_peaks(
+                filtered_power,
+                height=threshold_db,
+                distance=int(0.03 * sr / hop_length),
+                width=2 
+                )
+            logger.info(f"Detected {len(peaks)} peaks above threshold")
+
+            # Step 1: Identify segments of the signal above the threshold
             segments = []
             count = 0
             start_idx = None
 
-            # Find all validated segments
             for i, is_loud in enumerate(above_thresh):
                 if is_loud:
                     if count == 0:
@@ -235,11 +243,17 @@ class Command(BaseCommand):
             if count >= min_duration_frames:
                 segments.append((start_idx, len(above_thresh) - 1))
 
-            # Select the segment with the highest average power
+            # Step 2: Validate segments by checking for peaks within them
+            validated_segments = []
+            for start, end in segments:
+                # Check if there's a peak within the segment
+                if any((peak >= start and peak <= end) for peak in peaks):
+                    validated_segments.append((start, end))
+
+            # Step 3: Find the segment with the highest mean power
             best_segment = None
             best_power = -np.inf
-
-            for start, end in segments:
+            for start, end in validated_segments:
                 segment_power = filtered_power[start:end + 1].mean()
                 if segment_power > best_power:
                     best_power = segment_power
@@ -267,36 +281,6 @@ class Command(BaseCommand):
                 if filtered_only and (len(y) / sr) >= 10:
                     y_segment = y[int((start_time - 1) * sr):int((start_time + 9) * sr)]
                 else:
-                    y_segment = y
-                    start_time = 0
-
-
-            # If no signal is detected and filtered-only mode is active, skip the spectrogram generation
-            if start_frame is None:
-                if filtered_only:
-                    logger.info(
-                        f"No signal detected in {filename}, spectrogram not generated (--filtered-only enabled)."
-                    )
-                    return
-                else:
-                    logger.info(
-                        f"No signal detected in {filename}, generating full spectrogram."
-                    )
-                    y_segment = y
-                    start_time = 0
-            else:
-                start_time = start_frame * hop_length / sr
-                if filtered_only and (len(y) / sr) >= 10:
-                    logger.info(
-                        f"Signal detected at {start_time:.2f}s in {filename} (generating segment only)"
-                    )
-                    y_segment = y[
-                        int((start_time - 1) * sr) : int((start_time + 9) * sr)
-                    ]
-                else:
-                    logger.info(
-                        f"Signal detected at {start_time:.2f}s in {filename} (generating full spectrogram)"
-                    )
                     y_segment = y
                     start_time = 0
 
