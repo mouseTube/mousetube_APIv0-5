@@ -67,7 +67,7 @@ class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
         fields = "__all__"
-    
+
     def get_spectrogram_image_url(self, obj):
         if obj.spectrogram_image:
             return obj.spectrogram_image.url

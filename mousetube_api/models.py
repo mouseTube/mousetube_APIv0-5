@@ -217,7 +217,9 @@ class File(models.Model):
     doi = models.CharField(max_length=255, blank=True, null=True)
     is_valid_link = models.BooleanField(default=False)
     downloads = models.IntegerField(default=0)
-    spectrogram_image = models.ImageField(upload_to="audio_images/", null=True, blank=True)
+    spectrogram_image = models.ImageField(
+        upload_to="audio_images/", null=True, blank=True
+    )
 
     def __str__(self):
         """

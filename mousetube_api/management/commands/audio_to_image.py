@@ -165,7 +165,7 @@ class Command(BaseCommand):
         Generates a spectrogram image for a given audio file.
 
         This function detects whether the audio contains a relevant signal (e.g., ultrasonic vocalizations)
-        and generates a spectrogram accordingly. If `filtered_only` is True, spectrograms are only 
+        and generates a spectrogram accordingly. If `filtered_only` is True, spectrograms are only
         generated when signal is detected above a computed threshold.
 
         Parameters:
@@ -291,9 +291,7 @@ class Command(BaseCommand):
             image_path = os.path.join(IMG_DIR, image_name)
             plt.savefig(image_path)
             plt.close()
-            File.objects.filter(link=filename).update(
-                spectrogram_image=image_path
-            )
+            File.objects.filter(link=filename).update(spectrogram_image=image_path)
             logger.info(f"Spectrogram saved: {image_path}")
 
         except Exception as e:
