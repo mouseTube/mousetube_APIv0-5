@@ -73,6 +73,7 @@ class FileAdmin(admin.ModelAdmin):
         "link",
         "doi",
         "is_valid_link",
+        "spectrogram_image",
     )
     search_fields = (
         "link",

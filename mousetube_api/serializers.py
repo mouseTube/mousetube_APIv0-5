@@ -62,10 +62,16 @@ class ExperimentSerializer(serializers.ModelSerializer):
 class FileSerializer(serializers.ModelSerializer):
     experiment = ExperimentSerializer(read_only=True)
     subject = SubjectSerializer(read_only=True)
+    spectrogram_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = File
         fields = "__all__"
+
+    def get_spectrogram_image_url(self, obj):
+        if obj.spectrogram_image:
+            return obj.spectrogram_image.url
+        return None
 
 
 class ReferenceSerializer(serializers.ModelSerializer):
