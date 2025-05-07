@@ -221,8 +221,8 @@ class Command(BaseCommand):
                 filtered_power,
                 height=threshold_db,
                 distance=int(0.03 * sr / hop_length),
-                width=2 
-                )
+                width=2,
+            )
             logger.info(f"Detected {len(peaks)} peaks above threshold")
 
             # Step 1: Identify segments of the signal above the threshold
@@ -254,7 +254,7 @@ class Command(BaseCommand):
             best_segment = None
             best_power = -np.inf
             for start, end in validated_segments:
-                segment_power = filtered_power[start:end + 1].mean()
+                segment_power = filtered_power[start : end + 1].mean()
                 if segment_power > best_power:
                     best_power = segment_power
                     best_segment = (start, end)
@@ -262,10 +262,14 @@ class Command(BaseCommand):
             # if no segments were found, skip the spectrogram generation
             if best_segment is None:
                 if filtered_only:
-                    logger.info(f"No significant segment in {filename}, spectrogram not generated.")
+                    logger.info(
+                        f"No significant segment in {filename}, spectrogram not generated."
+                    )
                     return
                 else:
-                    logger.info(f"No significant segment in {filename}, generating full spectrogram.")
+                    logger.info(
+                        f"No significant segment in {filename}, generating full spectrogram."
+                    )
                     y_segment = y
                     start_time = 0
             else:
@@ -279,7 +283,9 @@ class Command(BaseCommand):
                 )
 
                 if filtered_only and (len(y) / sr) >= 10:
-                    y_segment = y[int((start_time - 1) * sr):int((start_time + 9) * sr)]
+                    y_segment = y[
+                        int((start_time - 1) * sr) : int((start_time + 9) * sr)
+                    ]
                 else:
                     y_segment = y
                     start_time = 0

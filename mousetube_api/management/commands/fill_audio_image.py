@@ -3,16 +3,17 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 from mousetube_api.models import File
 
+
 class Command(BaseCommand):
     help = "Fill the spectrogram_image field for audio files with the corresponding image file."
 
     def handle(self, *args, **options):
-        image_dir = os.path.join(settings.MEDIA_ROOT, 'audio_images')
+        image_dir = os.path.join(settings.MEDIA_ROOT, "audio_images")
         if not os.path.isdir(image_dir):
             self.stderr.write(self.style.ERROR(f"Folder not found : {image_dir}"))
             return
 
-        image_files = {f for f in os.listdir(image_dir) if f.endswith('.png')}
+        image_files = {f for f in os.listdir(image_dir) if f.endswith(".png")}
         updated = 0
 
         for file in File.objects.exclude(link__isnull=True).exclude(link=""):
