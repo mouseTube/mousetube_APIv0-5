@@ -202,6 +202,7 @@ class File(models.Model):
         doi (str, optional): The DOI of the file.
         is_valid_link (bool): Whether the link is valid.
         donwloads (int): The number of downloads for the file.
+        spectrogram_image (str, optional): The path to the spectrogram image associated with the file.
     """
 
     experiment = models.ForeignKey(
@@ -216,6 +217,7 @@ class File(models.Model):
     doi = models.CharField(max_length=255, blank=True, null=True)
     is_valid_link = models.BooleanField(default=False)
     downloads = models.IntegerField(default=0)
+    spectrogram_image = models.ImageField(upload_to="audio_images/", null=True, blank=True)
 
     def __str__(self):
         """

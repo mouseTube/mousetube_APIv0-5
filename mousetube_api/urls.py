@@ -32,6 +32,7 @@ from .views import TrackPageView
 from django.views.static import serve
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from django.contrib.admin.views.decorators import staff_member_required
+from django.conf.urls.static import static
 import os
 from django.conf import settings
 
@@ -62,4 +63,4 @@ urlpatterns = [
         name="admin-stats",
     ),
     path("admin/", admin.site.urls),
-]
+]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 # Directories for downloaded audio and spectrogram images
 AUDIO_DIR = os.path.join(settings.BASE_DIR, "downloaded_audio")
-IMG_DIR = os.path.join(settings.BASE_DIR, "audio_images")
+IMG_DIR = settings.AUDIO_IMG_DIR
 os.makedirs(AUDIO_DIR, exist_ok=True)
 os.makedirs(IMG_DIR, exist_ok=True)
 
@@ -161,6 +161,30 @@ class Command(BaseCommand):
     def generate_spectrogram(
         self, filename, local_audio_path, sr, n_fft, hop_length, filtered_only
     ):
+        """
+        Generates a spectrogram image for a given audio file.
+
+        This function detects whether the audio contains a relevant signal (e.g., ultrasonic vocalizations)
+        and generates a spectrogram accordingly. If `filtered_only` is True, spectrograms are only 
+        generated when signal is detected above a computed threshold.
+
+        Parameters:
+        - filename (str): Name of the audio file (used for display and output file naming).
+        - local_audio_path (str): Path to the audio file to load and analyze.
+        - sr (int): Sampling rate used when loading the audio.
+        - n_fft (int): FFT window size for computing the spectrogram; affects frequency resolution.
+        - hop_length (int): Number of audio samples between STFT columns; affects time resolution.
+        - filtered_only (bool): If True, spectrograms are only generated when a detectable signal is present.
+
+        Signal Filtering Parameters:
+        - `freq_min` / `freq_max` (20000–150000 Hz): Defines the frequency band to analyze; important for targeting ultrasonic ranges (e.g., mouse USVs).
+        - `size=7`: The smoothing filter size applied to the frequency-band power curve; higher values smooth out noise more but can blur short signals.
+        - `+3 dB`: A dynamic threshold is computed as the median power + 3 dB; this offset can be increased to make detection stricter.
+        - `0.03 sec`: Minimum duration (in seconds) the signal must exceed the threshold to be considered valid (computed in frames via hop length).
+
+        Returns:
+        None. Saves the spectrogram as an image in IMG_DIR and updates the File instance with the path.
+        """
         try:
             logger.info(f"Analyzing {filename}...")
 
@@ -267,6 +291,9 @@ class Command(BaseCommand):
             image_path = os.path.join(IMG_DIR, image_name)
             plt.savefig(image_path)
             plt.close()
+            File.objects.filter(link=filename).update(
+                spectrogram_image=image_path
+            )
             logger.info(f"Spectrogram saved: {image_path}")
 
         except Exception as e:
