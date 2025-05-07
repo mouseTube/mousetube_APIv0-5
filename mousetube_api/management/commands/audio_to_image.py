@@ -10,7 +10,7 @@ from django.core.management.base import BaseCommand
 from mousetube_api.models import File
 from django.conf import settings
 import logging
-from scipy.ndimage import uniform_filter1d
+from scipy.ndimage import uniform_filter1d, maximum_filter1d
 
 logger = logging.getLogger(__name__)
 
@@ -202,17 +202,18 @@ class Command(BaseCommand):
             freq_mask = (freqs >= freq_min) & (freqs <= freq_max)
             band_power = S_dB[freq_mask, :].mean(axis=0)
 
-            # Smooth the power values
-            smoothed_power = uniform_filter1d(band_power, size=15)
-            threshold_db = np.median(smoothed_power) + 3
+            # filter the power values
+            max_filtered_power = maximum_filter1d(band_power, size=15)
+            filtered_power = uniform_filter1d(max_filtered_power, size=5)
+            threshold_db = np.mean(filtered_power) + 2 * np.std(filtered_power)
 
             logger.info(
-                f"Median power: {np.median(smoothed_power):.2f} dB, Threshold: {threshold_db:.2f} dB"
+                f"Mean power: {np.median(filtered_power):.2f} dB, Threshold: {threshold_db:.2f} dB"
             )
-            logger.info(f"Max power: {np.max(smoothed_power):.2f} dB")
+            logger.info(f"Max power: {np.max(filtered_power):.2f} dB")
 
             # Identify where the power exceeds the threshold
-            above_thresh = smoothed_power > threshold_db
+            above_thresh = filtered_power > threshold_db
             min_duration_frames = int(0.03 * sr / hop_length)
 
             # Check if there is a segment with enough power for detection
@@ -239,7 +240,7 @@ class Command(BaseCommand):
             best_power = -np.inf
 
             for start, end in segments:
-                segment_power = smoothed_power[start:end + 1].mean()
+                segment_power = filtered_power[start:end + 1].mean()
                 if segment_power > best_power:
                     best_power = segment_power
                     best_segment = (start, end)
