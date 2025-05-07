@@ -203,7 +203,7 @@ class Command(BaseCommand):
             band_power = S_dB[freq_mask, :].mean(axis=0)
 
             # Smooth the power values
-            smoothed_power = uniform_filter1d(band_power, size=7)
+            smoothed_power = uniform_filter1d(band_power, size=15)
             threshold_db = np.median(smoothed_power) + 3
 
             logger.info(
@@ -216,16 +216,59 @@ class Command(BaseCommand):
             min_duration_frames = int(0.03 * sr / hop_length)
 
             # Check if there is a segment with enough power for detection
+            segments = []
             count = 0
-            start_frame = None
+            start_idx = None
+
+            # Find all validated segments
             for i, is_loud in enumerate(above_thresh):
                 if is_loud:
+                    if count == 0:
+                        start_idx = i
                     count += 1
-                    if count >= min_duration_frames:
-                        start_frame = i - count + 1
-                        break
                 else:
+                    if count >= min_duration_frames:
+                        segments.append((start_idx, i - 1))
                     count = 0
+
+            if count >= min_duration_frames:
+                segments.append((start_idx, len(above_thresh) - 1))
+
+            # Select the segment with the highest average power
+            best_segment = None
+            best_power = -np.inf
+
+            for start, end in segments:
+                segment_power = smoothed_power[start:end + 1].mean()
+                if segment_power > best_power:
+                    best_power = segment_power
+                    best_segment = (start, end)
+
+            # if no segments were found, skip the spectrogram generation
+            if best_segment is None:
+                if filtered_only:
+                    logger.info(f"No significant segment in {filename}, spectrogram not generated.")
+                    return
+                else:
+                    logger.info(f"No significant segment in {filename}, generating full spectrogram.")
+                    y_segment = y
+                    start_time = 0
+            else:
+                start_frame, end_frame = best_segment
+                start_time = start_frame * hop_length / sr
+                end_time = end_frame * hop_length / sr
+                logger.info(
+                    f"Most significant segment in {filename}: "
+                    f"from {start_time:.2f}s to {end_time:.2f}s "
+                    f"(Total time : {end_time - start_time:.2f}s, mean power : {best_power:.2f} dB)"
+                )
+
+                if filtered_only and (len(y) / sr) >= 10:
+                    y_segment = y[int((start_time - 1) * sr):int((start_time + 9) * sr)]
+                else:
+                    y_segment = y
+                    start_time = 0
+
 
             # If no signal is detected and filtered-only mode is active, skip the spectrogram generation
             if start_frame is None:
