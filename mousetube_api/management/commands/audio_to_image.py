@@ -206,10 +206,21 @@ class Command(BaseCommand):
             # filter the power values
             max_filtered_power = maximum_filter1d(band_power, size=15)
             filtered_power = uniform_filter1d(max_filtered_power, size=5)
+
+            # Use mean and std for thresholding
             threshold_db = np.mean(filtered_power) + 2 * np.std(filtered_power)
 
+            # Alternative thresholding method
+            # Compute median and IQR
+            # median_power = np.median(filtered_power)
+            # q75, q25 = np.percentile(filtered_power, [75, 25])
+            # iqr = q75 - q25
+
+            # Threshold using median and IQR
+            # threshold_db = median_power + 1.5 * iqr
+
             logger.info(
-                f"Mean power: {np.median(filtered_power):.2f} dB, Threshold: {threshold_db:.2f} dB"
+                f"Mean power: {np.mean(filtered_power):.2f} dB, Threshold: {threshold_db:.2f} dB"
             )
             logger.info(f"Max power: {np.max(filtered_power):.2f} dB")
 
