@@ -90,9 +90,15 @@ class FileAdmin(admin.ModelAdmin):
         """
         Custom method to access experiment__protocol__user.
         """
-        return obj.experiment.protocol.user if obj.experiment and obj.experiment.protocol else None
+        return (
+            obj.experiment.protocol.user
+            if obj.experiment and obj.experiment.protocol
+            else None
+        )
 
-    get_experiment_protocol_user.short_description = "Protocol User"  # Column name in admin
+    get_experiment_protocol_user.short_description = (
+        "Protocol User"  # Column name in admin
+    )
 
 
 class SoftwareAdmin(admin.ModelAdmin):
