@@ -17,7 +17,7 @@ class Command(BaseCommand):
         updated = 0
 
         for file in File.objects.exclude(link__isnull=True).exclude(link=""):
-            base_name = os.path.basename(file.link)
+            base_name = file.name or os.path.basename(file.link)
             print(f"Base name: {base_name}")
             base_name = os.path.splitext(base_name)[0]
             image_name = f"{base_name}.png"
