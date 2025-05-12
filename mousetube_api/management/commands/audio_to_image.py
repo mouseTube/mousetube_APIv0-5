@@ -322,6 +322,8 @@ class Command(BaseCommand):
                 y_axis="linear",
                 x_coords=np.arange(S_dB.shape[1]) * hop_length / sr + start_time,
                 cmap="gray_r",
+                vmin=-60,
+                vmax=0,   
             )
             plt.ylim(freq_min, freq_max)
 
