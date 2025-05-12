@@ -2,7 +2,8 @@ import logging
 import requests
 import time
 from django.core.management.base import BaseCommand
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
+import os
 from mousetube_api.models import File
 
 logger = logging.getLogger("check_dead_links")
@@ -11,9 +12,18 @@ logger = logging.getLogger("check_dead_links")
 class Command(BaseCommand):
     help = "Check for dead links in mousetube files"
 
+    def add_arguments(self, parser):
+        # Add command line arguments
+        parser.add_argument(
+            "--fill_name",
+            action="store_true",
+            help="Retrieve the name of the file from the downloaded file",
+        )
+
     def handle(self, *args, **options):
         logger.info("Starting dead link check...")
 
+        fill_name_mode = options["fill_name"]
         files = File.objects.exclude(link__isnull=True).exclude(link="")
 
         for file in files:
@@ -37,7 +47,13 @@ class Command(BaseCommand):
                 # Check if the URL is reachable
                 # Use a timeout to avoid hanging indefinitely
                 # Use allow_redirects=True to follow redirects
+                # Try HEAD first
                 response = requests.head(url, allow_redirects=True, timeout=5)
+                if response.status_code >= 400:
+                    # If HEAD fails, try GET
+                    response = requests.get(
+                        url, allow_redirects=True, timeout=10, stream=True
+                    )
                 link_alive = response.status_code < 400
                 if response.status_code == 429:
                     logger.warning(
@@ -55,6 +71,14 @@ class Command(BaseCommand):
                 if not file.is_valid_link:
                     file.is_valid_link = True
                     file.save()
+
+                # Fill name if requested
+                if fill_name_mode and not file.name:
+                    filename = self.extract_filename(response, url)
+                    if filename:
+                        logger.info(f"Setting filename: {filename}")
+                        file.name = filename
+                        file.save()
             else:
                 # If the link is dead
                 logger.error(f"BROKEN: {url} {response.status_code}")
@@ -69,3 +93,21 @@ class Command(BaseCommand):
         logger.info(f"Valid files: {valid_files.count()}")
         logger.info(f"Invalid files: {invalid_files.count()}")
         logger.info("Dead link check finished.")
+
+    def extract_filename(self, response, url):
+        """
+        Try to extract filename from Content-Disposition header, fall back to URL path.
+        """
+        content_disposition = response.headers.get("content-disposition")
+        if content_disposition:
+            parts = content_disposition.split(";")
+            for part in parts:
+                if "filename=" in part:
+                    filename = part.strip().split("filename=")[-1]
+                    filename = filename.strip('"')
+                    return filename
+
+        # Fallback to using the last part of the URL path
+        path = unquote(urlparse(url).path)
+        filename = os.path.basename(path)
+        return filename if filename else None

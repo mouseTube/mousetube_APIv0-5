@@ -67,6 +67,7 @@ class ExperimentAdmin(admin.ModelAdmin):
 
 class FileAdmin(admin.ModelAdmin):
     list_display = (
+        "name",
         "experiment",
         "subject",
         "number",
@@ -75,6 +76,7 @@ class FileAdmin(admin.ModelAdmin):
         "is_valid_link",
     )
     search_fields = (
+        "name",
         "link",
         "doi",
         "experiment__name",
