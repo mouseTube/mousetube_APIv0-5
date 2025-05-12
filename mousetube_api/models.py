@@ -204,6 +204,7 @@ class File(models.Model):
         donwloads (int): The number of downloads for the file.
     """
 
+    name = models.CharField(max_length=255, blank=True, null=True)
     experiment = models.ForeignKey(
         Experiment, on_delete=models.CASCADE, blank=True, null=True
     )

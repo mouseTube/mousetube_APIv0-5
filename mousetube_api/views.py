@@ -214,7 +214,7 @@ class FileAPIView(APIView):
                     files = files.filter(is_valid_link=True)
 
         # Add explicit ordering to avoid UnorderedObjectListWarning
-        files = files.order_by("link")
+        files = files.order_by(F("name").asc(nulls_last=True))
         paginator = FilePagination()
         paginated_files = paginator.paginate_queryset(files, request)
         serializer = self.serializer_class(paginated_files, many=True)
