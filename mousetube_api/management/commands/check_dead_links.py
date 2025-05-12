@@ -47,11 +47,13 @@ class Command(BaseCommand):
                 # Check if the URL is reachable
                 # Use a timeout to avoid hanging indefinitely
                 # Use allow_redirects=True to follow redirects
-                # D'abord HEAD pour les serveurs classiques
+                # Try HEAD first
                 response = requests.head(url, allow_redirects=True, timeout=5)
                 if response.status_code >= 400:
-                    # Si HEAD échoue, on tente GET pour les services comme Google Drive ou Dropbox
-                    response = requests.get(url, allow_redirects=True, timeout=10, stream=True)
+                    # If HEAD fails, try GET
+                    response = requests.get(
+                        url, allow_redirects=True, timeout=10, stream=True
+                    )
                 link_alive = response.status_code < 400
                 if response.status_code == 429:
                     logger.warning(
