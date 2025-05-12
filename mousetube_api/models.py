@@ -205,6 +205,7 @@ class File(models.Model):
         spectrogram_image (str, optional): The path to the spectrogram image associated with the file.
     """
 
+    name = models.CharField(max_length=255, blank=True, null=True)
     experiment = models.ForeignKey(
         Experiment, on_delete=models.CASCADE, blank=True, null=True
     )

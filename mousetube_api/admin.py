@@ -67,6 +67,7 @@ class ExperimentAdmin(admin.ModelAdmin):
 
 class FileAdmin(admin.ModelAdmin):
     list_display = (
+        "name",
         "experiment",
         "subject",
         "number",
@@ -76,6 +77,7 @@ class FileAdmin(admin.ModelAdmin):
         "spectrogram_image",
     )
     search_fields = (
+        "name",
         "link",
         "doi",
         "experiment__name",
