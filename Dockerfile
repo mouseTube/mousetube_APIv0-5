@@ -1,27 +1,35 @@
-FROM python:alpine
+FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-RUN apk update && apk add --no-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
-    musl-dev \
-    mariadb-dev \
+    g++ \
     mariadb-client \
+    libmariadb-dev \
     libffi-dev \
-    build-base \
-    pkgconfig \
-    bash
+    build-essential \
+    pkg-config \
+    curl \
+    bash \
+    dos2unix \
+    ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -L https://github.com/astral-sh/uv/releases/latest/download/uv-x86_64-unknown-linux-gnu.tar.gz \
+    | tar xz -C /usr/local/bin --strip-components=1 uv-x86_64-unknown-linux-gnu/uv
+
+RUN uv --version
 
 WORKDIR /app
 
 COPY . .
 
-RUN pip install --upgrade pip
-RUN pip install -e .
+RUN uv pip install -e . --system
 
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-RUN dos2unix /entrypoint.sh
+RUN chmod +x /entrypoint.sh && dos2unix /entrypoint.sh
 
-ENTRYPOINT [ "bash", "/entrypoint.sh" ]
+ENTRYPOINT ["bash", "/entrypoint.sh"]
