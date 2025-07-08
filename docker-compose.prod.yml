@@ -22,6 +22,8 @@ services:
       - ./media:/app/media
     expose:
       - "8000"
+    ports:
+      - "8000:8000"
     depends_on:
       - db
     env_file:
@@ -38,10 +40,15 @@ services:
       - ../mousetube_frontendv0-5:/app
     expose:
       - "3000"
+    ports:
+      - "3000:3000"
     depends_on:
       - web
     env_file:
       - ../mousetube_frontendv0-5/.env
+      - ../mousetube_frontendv0-5/.npm:/app/.npm
+    environment:
+    - NPM_CONFIG_CACHE=/app/.npm
     user: "${UID:-1000}:${GID:-1000}"
 
   nginx:
@@ -49,10 +56,8 @@ services:
     build:
       context: ./nginx
     volumes:
-      - nginx_certs:/etc/letsencrypt
-      - ./nginx/certbot:/var/www/certbot
-      # - ./nginx/ssl/nginx.crt:/etc/letsencrypt/live/${DOMAIN}/fullchain.pem
-      # - ./nginx/ssl/nginx.key:/etc/letsencrypt/live/${DOMAIN}/privkey.pem
+      - ./nginx/ssl/nginx.crt:/etc/letsencrypt/live/${DOMAIN}/fullchain.pem
+      - ./nginx/ssl/nginx.key:/etc/letsencrypt/live/${DOMAIN}/privkey.pem
       - ./staticfiles:/app/staticfiles
       - ./media:/app/media
       - ./logs/nginx:/var/log/nginx
@@ -67,17 +72,5 @@ services:
     restart:
       always
 
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - nginx_certs:/etc/letsencrypt
-      - ./nginx/certbot:/var/www/certbot
-      - ./nginx/conf.d:/etc/nginx/conf.d
-    entrypoint: >
-      sh -c "certbot certonly --webroot -w /var/www/certbot
-      --email admin@${DOMAIN} --agree-tos --no-eff-email
-      -d ${DOMAIN}"
-
 volumes:
   mariadb_data:
-  nginx_certs:
