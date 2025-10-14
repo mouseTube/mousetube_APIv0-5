@@ -30,6 +30,24 @@ services:
       DB_HOST: db
       FIXTURE_FILE: /app/exported_data.json
     user: "${UID:-1000}:${GID:-1000}"
+  
+  frontend:
+    build: ../mousetube_frontendv0-5
+    command: /entrypoint.sh
+    volumes:
+      - ../mousetube_frontendv0-5:/app
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - web
+    env_file:
+      - ../mousetube_frontendv0-5/.env
+      - ../mousetube_frontendv0-5/.npm:/app/.npm
+    environment:
+    - NPM_CONFIG_CACHE=/app/.npm
+    user: "${UID:-1000}:${GID:-1000}"
 
 volumes:
   mariadb_data:
