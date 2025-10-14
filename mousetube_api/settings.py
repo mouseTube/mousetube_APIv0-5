@@ -179,6 +179,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
+AUDIO_IMG_DIR = os.path.join(MEDIA_ROOT, "audio_images")
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -201,10 +203,6 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.AllowAny",
     ],
 }
-
-# To upload
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 LOG_DIR = Path(BASE_DIR) / "logs"
 LOG_DIR.mkdir(exist_ok=True)

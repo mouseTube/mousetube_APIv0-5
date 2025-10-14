@@ -11,7 +11,8 @@ RUN apk update && apk add --no-cache \
     libffi-dev \
     build-base \
     pkgconfig \
-    bash
+    bash \
+    ca-certificates
 
 WORKDIR /app
 
