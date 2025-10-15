@@ -50,8 +50,8 @@ services:
     build:
       context: ./nginx
     volumes:
-      - ./nginx/ssl/nginx.crt:/etc/letsencrypt/live/${DOMAIN}/fullchain.pem
-      - ./nginx/ssl/nginx.key:/etc/letsencrypt/live/${DOMAIN}/privkey.pem
+      # - ./nginx/ssl/nginx.crt:/etc/letsencrypt/live/${DOMAIN}/fullchain.pem
+      # - ./nginx/ssl/nginx.key:/etc/letsencrypt/live/${DOMAIN}/privkey.pem
       - ./staticfiles:/app/staticfiles
       - ./media:/app/media
       - ./logs/nginx:/var/log/nginx

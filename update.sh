@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKEND_DIR="$SCRIPT_DIR"
 FRONTEND_DIR="$SCRIPT_DIR/../mousetube_frontendv0-5"
 
+# --- 1️⃣ Pull latest code ---
 echo "🔄 Updating backend..."
 cd "$BACKEND_DIR"
 git pull origin main
@@ -14,16 +15,15 @@ echo "🔄 Updating frontend..."
 cd "$FRONTEND_DIR"
 git pull origin main
 
-echo "🐳 Rebuilding and restarting Docker containers..."
+# --- 2️⃣ Build and restart Docker containers ---
+echo "🐳 Building and restarting Docker containers..."
 cd "$BACKEND_DIR"
+docker compose -f docker-compose.prod.yml up -d --build
 
-# Rebuild images if Dockerfile or dependencies changed
-docker-compose build web frontend
+# --- 3️⃣ Clean up Docker (optional, frees space) ---
+echo "🧹 Cleaning up Docker..."
+docker container prune -f
+docker image prune -af
+docker builder prune -f
 
-# Restart web and frontend services
-docker-compose up -d web frontend
-
-echo "🗂️ Applying Django migrations..."
-docker-compose run --rm web python /app/manage.py migrate
-
-echo "✅ Backend and frontend updated and restarted!"
+echo "✅ Backend and frontend updated, containers rebuilt, migrations applied, cleanup done!"
