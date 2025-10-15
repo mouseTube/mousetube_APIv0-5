@@ -52,7 +52,6 @@ services:
     user: "${UID:-1000}:${GID:-1000}"
 
   nginx:
-    image: nginx:latest
     build:
       context: ./nginx
     volumes:
@@ -69,8 +68,7 @@ services:
       - web
     environment:
       DOMAIN: ${DOMAIN}
-    restart:
-      always
+    restart: always
 
 volumes:
   mariadb_data:
