@@ -22,8 +22,6 @@ services:
       - ./media:/app/media
     expose:
       - "8000"
-    ports:
-      - "8000:8000"
     depends_on:
       - db
     env_file:
@@ -40,13 +38,10 @@ services:
       - ../mousetube_frontendv0-5:/app
     expose:
       - "3000"
-    ports:
-      - "3000:3000"
     depends_on:
       - web
     env_file:
       - ../mousetube_frontendv0-5/.env
-      - ../mousetube_frontendv0-5/.npm:/app/.npm
     environment:
     - NPM_CONFIG_CACHE=/app/.npm
     user: "${UID:-1000}:${GID:-1000}"
