@@ -23,7 +23,17 @@ echo "Fixture file to load: $FIXTURE_FILE"
 echo "🔧 Checking for MariaDB dependencies..."
 
 # Check dependencies
-for pkg in pkg-config libmariadb-dev python3-dev; do
+REQUIRED_PKGS=(
+    pkg-config
+    libmariadb-dev
+    python3-dev
+    build-essential
+    libssl-dev
+    libffi-dev
+    python3-pip
+)
+
+for pkg in "${REQUIRED_PKGS[@]}"; do
     if ! dpkg -s "$pkg" &>/dev/null; then
         echo "📦 Installing $pkg..."
         sudo apt-get update

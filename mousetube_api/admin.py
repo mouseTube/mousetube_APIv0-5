@@ -74,6 +74,8 @@ class FileAdmin(admin.ModelAdmin):
         "link",
         "doi",
         "is_valid_link",
+        "spectrogram_image",
+        "get_experiment_protocol_user",  # Use a custom method
     )
     search_fields = (
         "name",
@@ -83,6 +85,20 @@ class FileAdmin(admin.ModelAdmin):
         "subject__name",
     )
     list_filter = ("is_valid_link", "experiment", "subject")
+
+    def get_experiment_protocol_user(self, obj):
+        """
+        Custom method to access experiment__protocol__user.
+        """
+        return (
+            obj.experiment.protocol.user
+            if obj.experiment and obj.experiment.protocol
+            else None
+        )
+
+    get_experiment_protocol_user.short_description = (
+        "Protocol User"  # Column name in admin
+    )
 
 
 class SoftwareAdmin(admin.ModelAdmin):
