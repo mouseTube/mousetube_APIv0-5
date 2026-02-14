@@ -202,7 +202,7 @@ class FileAPIView(APIView):
                 | protocol_query
             )
 
-        ALLOWED_FILTERS = ["is_valid_link"]
+        ALLOWED_FILTERS = ["is_valid_link", "preview_available"]
 
         # Apply filters
         if filter_query:
@@ -212,6 +212,10 @@ class FileAPIView(APIView):
 
                 if filter_name == "is_valid_link":
                     files = files.filter(is_valid_link=True)
+                elif filter_name == "preview_available":
+                    files = files.filter(spectrogram_image__isnull=False).exclude(
+                        spectrogram_image=""
+                    )
 
         # Add explicit ordering to avoid UnorderedObjectListWarning
         files = files.order_by(F("name").asc(nulls_last=True))
