@@ -18,6 +18,7 @@ from mousetube_api.models import (
     PageView,
     Software,
     Reference,
+    Dataset
 )
 from rest_framework import serializers
 
@@ -91,3 +92,16 @@ class PageViewSerializer(serializers.ModelSerializer):
 
 class TrackPageSerializer(serializers.Serializer):
     path = serializers.CharField(max_length=255)
+
+
+class DatasetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dataset
+        fields = [
+            "id",
+            "name",
+            "description",
+            "link",
+            "doi",
+            "metadata",
+        ]

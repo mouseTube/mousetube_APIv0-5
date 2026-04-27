@@ -327,3 +327,35 @@ class Software(models.Model):
     class Meta:
         verbose_name = "Software"
         verbose_name_plural = "Software"
+
+
+class Dataset(models.Model):
+    """
+    A collection of files grouped together with associated metadata.
+
+    Fields:
+        name (CharField): Name of the dataset.
+        metadata (JSONField): metadata in a json.
+        description (TextField): Description of the dataset.
+        link (CharField): External link or identifier for the dataset.
+        doi (CharField): DOI of the dataset, if applicable.
+        created_at (DateTimeField): Timestamp when the dataset was created.
+        modified_at (DateTimeField): Last modification timestamp.
+        created_by (ForeignKey): User who created the dataset.
+    """
+
+    name = models.CharField(max_length=255)
+    metadata = models.JSONField(default=dict)
+    description = models.TextField(default="")
+    link = models.CharField(max_length=255, blank=True, null=True)
+    doi = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Dataset"
+        verbose_name_plural = "Datasets"

@@ -20,6 +20,7 @@ from .serializers import (
     PageViewSerializer,
     TrackPageSerializer,
     SoftwareSerializer,
+    DatasetSerializer
 )
 from .models import (
     User,
@@ -30,6 +31,7 @@ from .models import (
     File,
     PageView,
     Software,
+    Dataset
 )
 from django.db.models import Q
 from rest_framework import status
@@ -363,3 +365,51 @@ def stats_view(request):
         content = f.read()
 
     return render(request, "stats_view.html", {"content": content})
+
+
+# ----------------------------
+# Dataset
+# ----------------------------
+class DatasetAPIView(APIView):
+    serializer_class = DatasetSerializer
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="search", description="text search", required=False, type=str
+            ),
+            OpenApiParameter(
+                name="filter", description="filter", required=False, type=str
+            ),
+        ]
+    )
+    def get(self, request, *args, **kwargs):
+        search_query = request.GET.get("search", "")
+        filter_query = request.GET.get("filter", "")
+        dataset = Dataset.objects.all()
+
+        if search_query:
+            dataset_fields = [
+                "name",
+                "description",
+                "link",
+                "doi"
+            ]
+
+            # Build Q objects
+            dataset_query = Q()
+            for field in dataset_fields:
+                dataset_query |= Q(**{f"{field}__icontains": search_query})
+
+        ALLOWED_FILTERS = ["acquisition", "analysis", "acquisition and analysis"]
+
+        if filter_query and filter_query in ALLOWED_FILTERS:
+            dataset = (dataset.filter(type=filter_query))
+
+        datasets = dataset.order_by("name")
+        paginator = FilePagination()
+        paginated_datasets = paginator.paginate_queryset(datasets, request)
+        serializer = self.serializer_class(paginated_datasets, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+

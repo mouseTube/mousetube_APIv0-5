@@ -8,6 +8,7 @@ from .models import (
     File,
     Software,
     Reference,
+    Dataset
 )
 
 
@@ -118,6 +119,22 @@ class ReferenceAdmin(admin.ModelAdmin):
     )
 
 
+class DatasetAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "description",
+        "link",
+        "doi",
+        "metadata",
+    )
+    search_fields = (
+        "name",
+        "description",
+        "link",
+        "doi",
+    )
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Strain, StrainAdmin)
 admin.site.register(Subject, SubjectAdmin)
@@ -126,3 +143,4 @@ admin.site.register(Experiment, ExperimentAdmin)
 admin.site.register(File, FileAdmin)
 admin.site.register(Software, SoftwareAdmin)
 admin.site.register(Reference, ReferenceAdmin)
+admin.site.register(Dataset, DatasetAdmin)
