@@ -95,13 +95,17 @@ class TrackPageSerializer(serializers.Serializer):
 
 
 class DatasetSerializer(serializers.ModelSerializer):
+    files = FileSerializer(many=True, read_only=True)
+
     class Meta:
         model = Dataset
         fields = [
             "id",
             "name",
+            "files",
             "description",
             "link",
             "doi",
             "metadata",
+            "species"
         ]
