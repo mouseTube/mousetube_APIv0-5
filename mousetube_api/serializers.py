@@ -107,5 +107,6 @@ class DatasetSerializer(serializers.ModelSerializer):
             "link",
             "doi",
             "metadata",
-            "species"
+            "species",
+            "downloads"
         ]
