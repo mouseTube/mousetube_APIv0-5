@@ -18,7 +18,7 @@ from mousetube_api.models import (
     PageView,
     Software,
     Reference,
-    Dataset
+    Dataset,
 )
 from rest_framework import serializers
 
@@ -108,5 +108,5 @@ class DatasetSerializer(serializers.ModelSerializer):
             "doi",
             "metadata",
             "species",
-            "downloads"
+            "downloads",
         ]

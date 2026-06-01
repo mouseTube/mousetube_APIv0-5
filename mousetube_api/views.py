@@ -20,7 +20,7 @@ from .serializers import (
     PageViewSerializer,
     TrackPageSerializer,
     SoftwareSerializer,
-    DatasetSerializer
+    DatasetSerializer,
 )
 from .models import (
     User,
@@ -31,7 +31,7 @@ from .models import (
     File,
     PageView,
     Software,
-    Dataset
+    Dataset,
 )
 from django.db.models import Q
 from rest_framework import status
@@ -389,12 +389,7 @@ class DatasetAPIView(APIView):
         dataset = Dataset.objects.all()
 
         if search_query:
-            dataset_fields = [
-                "name",
-                "description",
-                "link",
-                "doi"
-            ]
+            dataset_fields = ["name", "description", "link", "doi"]
 
             # Build Q objects
             dataset_query = Q()
@@ -404,13 +399,14 @@ class DatasetAPIView(APIView):
         ALLOWED_FILTERS = ["acquisition", "analysis", "acquisition and analysis"]
 
         if filter_query and filter_query in ALLOWED_FILTERS:
-            dataset = (dataset.filter(type=filter_query))
+            dataset = dataset.filter(type=filter_query)
 
         datasets = dataset.order_by("name")
         paginator = FilePagination()
         paginated_datasets = paginator.paginate_queryset(datasets, request)
         serializer = self.serializer_class(paginated_datasets, many=True)
         return paginator.get_paginated_response(serializer.data)
+
 
 class DatasetDetailAPIView(APIView):
     @extend_schema(exclude=True)

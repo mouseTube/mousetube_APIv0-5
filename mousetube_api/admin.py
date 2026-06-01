@@ -8,7 +8,7 @@ from .models import (
     File,
     Software,
     Reference,
-    Dataset
+    Dataset,
 )
 
 
