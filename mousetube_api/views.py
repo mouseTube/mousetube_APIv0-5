@@ -200,9 +200,7 @@ class FileAPIView(APIView):
             # Build dynamic Q objects for Species field
             species_query = Q()
             for field in species_fields:
-                species_query |= Q(
-                    **{f"species__{field}__icontains": search_query}
-                )
+                species_query |= Q(**{f"species__{field}__icontains": search_query})
 
             # Combine all queries
             files = files.filter(
