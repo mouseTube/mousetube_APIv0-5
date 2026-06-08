@@ -141,12 +141,8 @@ class DatasetAdmin(admin.ModelAdmin):
 
 
 class SpeciesAdmin(admin.ModelAdmin):
-    list_display = (
-        "name",
-    )
-    search_fields = (
-        "name",
-    )
+    list_display = ("name",)
+    search_fields = ("name",)
 
 
 admin.site.register(User, UserAdmin)

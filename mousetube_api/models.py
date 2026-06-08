@@ -61,7 +61,7 @@ class Species(models.Model):
 
 
 def get_default_species():
-    return Species.objects.get_or_create(name='Mus musculus')[0].id
+    return Species.objects.get_or_create(name="Mus musculus")[0].id
 
 
 class Strain(models.Model):
@@ -243,7 +243,9 @@ class File(models.Model):
     downloads = models.IntegerField(default=0)
     spectrogram = models.ImageField(blank=True, null=True)
     plot = models.ImageField(blank=True, null=True)
-    species = models.ForeignKey(Species, on_delete=models.SET_DEFAULT, default=get_default_species)
+    species = models.ForeignKey(
+        Species, on_delete=models.SET_DEFAULT, default=get_default_species
+    )
 
     def __str__(self):
         """
@@ -379,7 +381,9 @@ class Dataset(models.Model):
     description = models.TextField(default="")
     link = models.CharField(max_length=255, blank=True, null=True)
     doi = models.CharField(max_length=255, blank=True, null=True)
-    species = models.ForeignKey(Species, on_delete=models.SET_DEFAULT, default=get_default_species)
+    species = models.ForeignKey(
+        Species, on_delete=models.SET_DEFAULT, default=get_default_species
+    )
     downloads = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
