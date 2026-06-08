@@ -158,6 +158,9 @@ class FileAPIView(APIView):
             # Fields for Protocol model (related to Experiment)
             protocol_fields = ["name", "number_files", "description"]
 
+            # Fields for Species model
+            species_fields = ["name"]
+
             # Build dynamic Q objects for File fields
             file_query = Q()
             for field in file_fields:
@@ -194,6 +197,13 @@ class FileAPIView(APIView):
                     **{f"experiment__protocol__{field}__icontains": search_query}
                 )
 
+            # Build dynamic Q objects for Species field
+            species_query = Q()
+            for field in species_fields:
+                species_query |= Q(
+                    **{f"species__{field}__icontains": search_query}
+                )
+
             # Combine all queries
             files = files.filter(
                 file_query
@@ -202,6 +212,7 @@ class FileAPIView(APIView):
                 | user_query
                 | strain_query
                 | protocol_query
+                | species_query
             )
 
         ALLOWED_FILTERS = ["is_valid_link"]
