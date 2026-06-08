@@ -9,6 +9,7 @@ from .models import (
     Software,
     Reference,
     Dataset,
+    Species,
 )
 
 
@@ -75,6 +76,7 @@ class FileAdmin(admin.ModelAdmin):
         "link",
         "doi",
         "is_valid_link",
+        "species",
     )
     search_fields = (
         "name",
@@ -82,6 +84,7 @@ class FileAdmin(admin.ModelAdmin):
         "doi",
         "experiment__name",
         "subject__name",
+        "species__name",
     )
     list_filter = ("is_valid_link", "experiment", "subject")
 
@@ -126,12 +129,23 @@ class DatasetAdmin(admin.ModelAdmin):
         "link",
         "doi",
         "metadata",
+        "species",
     )
     search_fields = (
         "name",
         "description",
         "link",
         "doi",
+        "species__name",
+    )
+
+
+class SpeciesAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+    )
+    search_fields = (
+        "name",
     )
 
 
@@ -144,3 +158,4 @@ admin.site.register(File, FileAdmin)
 admin.site.register(Software, SoftwareAdmin)
 admin.site.register(Reference, ReferenceAdmin)
 admin.site.register(Dataset, DatasetAdmin)
+admin.site.register(Species, SpeciesAdmin)

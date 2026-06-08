@@ -19,13 +19,21 @@ from mousetube_api.models import (
     Software,
     Reference,
     Dataset,
+    Species,
 )
+
 from rest_framework import serializers
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
+        fields = "__all__"
+
+
+class SpeciesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Species
         fields = "__all__"
 
 
@@ -63,6 +71,7 @@ class ExperimentSerializer(serializers.ModelSerializer):
 class FileSerializer(serializers.ModelSerializer):
     experiment = ExperimentSerializer(read_only=True)
     subject = SubjectSerializer(read_only=True)
+    species = SpeciesSerializer(read_only=True)
 
     class Meta:
         model = File
@@ -95,6 +104,7 @@ class TrackPageSerializer(serializers.Serializer):
 
 
 class DatasetSerializer(serializers.ModelSerializer):
+    species = SpeciesSerializer(read_only=True)
     files = FileSerializer(many=True, read_only=True)
 
     class Meta:
