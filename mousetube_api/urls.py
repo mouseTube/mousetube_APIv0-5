@@ -15,25 +15,30 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+import os
+
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import (
-    UserAPIView,
-    StrainAPIView,
-    SubjectAPIView,
-    ProtocolAPIView,
-    ExperimentAPIView,
-    FileAPIView,
-    SoftwareAPIView,
-    FileDetailAPIView,
-)
-from .views import TrackPageView
+from django.contrib.admin.views.decorators import staff_member_required
+from django.urls import include, path
 from django.views.static import serve
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from django.contrib.admin.views.decorators import staff_member_required
-import os
-from django.conf import settings
+from rest_framework.routers import DefaultRouter
+
+from .views import (
+    DatasetAPIView,
+    DatasetDetailAPIView,
+    ExperimentAPIView,
+    FileAPIView,
+    FileDetailAPIView,
+    ProtocolAPIView,
+    SoftwareAPIView,
+    StrainAPIView,
+    SubjectAPIView,
+    TrackPageView,
+    UserAPIView,
+)
 
 router = DefaultRouter()
 
@@ -45,6 +50,10 @@ urlpatterns = [
     path("api/protocol/", ProtocolAPIView.as_view()),
     path("api/experiment/", ExperimentAPIView.as_view()),
     path("api/software/", SoftwareAPIView.as_view()),
+    path("api/dataset/", DatasetAPIView.as_view()),
+    path(
+        "api/dataset/<int:pk>/", DatasetDetailAPIView.as_view(), name="dataset-detail"
+    ),
     path("api/file/", FileAPIView.as_view(), name="file-list"),
     path("api/file/<int:pk>/", FileDetailAPIView.as_view(), name="file-detail"),
     path("api/track-page/", TrackPageView.as_view(), name="track-page"),
@@ -63,3 +72,6 @@ urlpatterns = [
     ),
     path("admin/", admin.site.urls),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

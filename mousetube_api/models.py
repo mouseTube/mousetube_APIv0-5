@@ -42,6 +42,28 @@ class User(models.Model):
         return f"{self.first_name_user} {self.name_user}"
 
 
+class Species(models.Model):
+    """
+    Represents a biological species relevant to the data.
+
+    Fields:
+        name (CharField): Scientific or common name of the species.
+    """
+
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Species"
+        verbose_name_plural = "Species"
+
+
+def get_default_species():
+    return Species.objects.get_or_create(name="Mus musculus")[0].id
+
+
 class Strain(models.Model):
     """
     Represents a strain of a mouse.
@@ -202,6 +224,8 @@ class File(models.Model):
         doi (str, optional): The DOI of the file.
         is_valid_link (bool): Whether the link is valid.
         donwloads (int): The number of downloads for the file.
+        spectrogram (ImageField): image of the spectrogram of the file: only admin can fill this field
+        plot (ImageField): image of the plot of the file: only admin can fill this field. Useful for datasets
     """
 
     name = models.CharField(max_length=255, blank=True, null=True)
@@ -217,6 +241,11 @@ class File(models.Model):
     doi = models.CharField(max_length=255, blank=True, null=True)
     is_valid_link = models.BooleanField(default=False)
     downloads = models.IntegerField(default=0)
+    spectrogram = models.ImageField(blank=True, null=True)
+    plot = models.ImageField(blank=True, null=True)
+    species = models.ForeignKey(
+        Species, on_delete=models.SET_DEFAULT, default=get_default_species
+    )
 
     def __str__(self):
         """
@@ -327,3 +356,42 @@ class Software(models.Model):
     class Meta:
         verbose_name = "Software"
         verbose_name_plural = "Software"
+
+
+class Dataset(models.Model):
+    """
+    A collection of files grouped together with associated metadata.
+
+    Fields:
+        name (CharField): Name of the dataset.
+        files (ManyToManyField): Files associated with the dataset.
+        metadata (JSONField): metadata in a json.
+        description (TextField): Description of the dataset.
+        link (CharField): External link or identifier for the dataset.
+        doi (CharField): DOI of the dataset, if applicable.
+        species (CharField): Species of the dataset.
+        created_at (DateTimeField): Timestamp when the dataset was created.
+        modified_at (DateTimeField): Last modification timestamp.
+        created_by (ForeignKey): User who created the dataset.
+    """
+
+    name = models.CharField(max_length=255)
+    files = models.ManyToManyField(File, related_name="files", blank=True)
+    metadata = models.JSONField(default=dict)
+    description = models.TextField(default="")
+    link = models.CharField(max_length=255, blank=True, null=True)
+    doi = models.CharField(max_length=255, blank=True, null=True)
+    species = models.ForeignKey(
+        Species, on_delete=models.SET_DEFAULT, default=get_default_species
+    )
+    downloads = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Dataset"
+        verbose_name_plural = "Datasets"

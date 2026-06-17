@@ -7,40 +7,43 @@
 # PHENOMIN, CNRS UMR7104, INSERM U964, Université de Strasbourg
 # Code under GPL v3.0 licence
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
+import os
+
+from django.conf import settings
+from django.core.cache import cache
+from django.core.management import call_command
+from django.db.models import F, Q
+from django.shortcuts import render
+from django.utils.timezone import now
+from drf_spectacular.utils import OpenApiParameter, extend_schema
+from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
-from .serializers import (
-    UserSerializer,
-    StrainSerializer,
-    SubjectSerializer,
-    ProtocolSerializer,
-    ExperimentSerializer,
-    FileSerializer,
-    PageViewSerializer,
-    TrackPageSerializer,
-    SoftwareSerializer,
-)
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .models import (
-    User,
-    Strain,
-    Subject,
-    Protocol,
+    Dataset,
     Experiment,
     File,
     PageView,
+    Protocol,
     Software,
+    Strain,
+    Subject,
+    User,
 )
-from django.db.models import Q
-from rest_framework import status
-from django.utils.timezone import now
-from django.db.models import F
-from django.core.cache import cache
-from django.core.management import call_command
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-from django.shortcuts import render
-from django.conf import settings
-import os
+from .serializers import (
+    DatasetSerializer,
+    ExperimentSerializer,
+    FileSerializer,
+    PageViewSerializer,
+    ProtocolSerializer,
+    SoftwareSerializer,
+    StrainSerializer,
+    SubjectSerializer,
+    TrackPageSerializer,
+    UserSerializer,
+)
 
 
 class FilePagination(PageNumberPagination):
@@ -156,6 +159,9 @@ class FileAPIView(APIView):
             # Fields for Protocol model (related to Experiment)
             protocol_fields = ["name", "number_files", "description"]
 
+            # Fields for Species model
+            species_fields = ["name"]
+
             # Build dynamic Q objects for File fields
             file_query = Q()
             for field in file_fields:
@@ -192,6 +198,11 @@ class FileAPIView(APIView):
                     **{f"experiment__protocol__{field}__icontains": search_query}
                 )
 
+            # Build dynamic Q objects for Species field
+            species_query = Q()
+            for field in species_fields:
+                species_query |= Q(**{f"species__{field}__icontains": search_query})
+
             # Combine all queries
             files = files.filter(
                 file_query
@@ -200,6 +211,7 @@ class FileAPIView(APIView):
                 | user_query
                 | strain_query
                 | protocol_query
+                | species_query
             )
 
         ALLOWED_FILTERS = ["is_valid_link"]
@@ -363,3 +375,71 @@ def stats_view(request):
         content = f.read()
 
     return render(request, "stats_view.html", {"content": content})
+
+
+# ----------------------------
+# Dataset
+# ----------------------------
+class DatasetAPIView(APIView):
+    serializer_class = DatasetSerializer
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="search", description="text search", required=False, type=str
+            ),
+            OpenApiParameter(
+                name="filter", description="filter", required=False, type=str
+            ),
+        ]
+    )
+    def get(self, request, *args, **kwargs):
+        search_query = request.GET.get("search", "")
+        filter_query = request.GET.get("filter", "")
+        dataset = Dataset.objects.all()
+
+        if search_query:
+            dataset_fields = ["name", "description", "link", "doi"]
+
+            # Build Q objects
+            dataset_query = Q()
+            for field in dataset_fields:
+                dataset_query |= Q(**{f"{field}__icontains": search_query})
+
+        ALLOWED_FILTERS = ["acquisition", "analysis", "acquisition and analysis"]
+
+        if filter_query and filter_query in ALLOWED_FILTERS:
+            dataset = dataset.filter(type=filter_query)
+
+        datasets = dataset.order_by("name")
+        paginator = FilePagination()
+        paginated_datasets = paginator.paginate_queryset(datasets, request)
+        serializer = self.serializer_class(paginated_datasets, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+class DatasetDetailAPIView(APIView):
+    @extend_schema(exclude=True)
+    def patch(self, request, *args, **kwargs):
+        try:
+            dataset = Dataset.objects.get(pk=kwargs["pk"])
+        except Dataset.DoesNotExist:
+            return Response(
+                {"detail": "Dataset not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        if "downloads" in request.data and request.data["downloads"] == "increment":
+            updated = Dataset.objects.filter(pk=kwargs["pk"]).update(
+                downloads=F("downloads") + 1
+            )
+            if updated == 0:
+                return Response(
+                    {"detail": "Dataset not found or update failed"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            dataset.refresh_from_db()
+            return Response({"downloads": dataset.downloads}, status=status.HTTP_200_OK)
+
+        return Response(
+            {"detail": "Invalid request body"}, status=status.HTTP_400_BAD_REQUEST
+        )

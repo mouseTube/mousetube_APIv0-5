@@ -1,13 +1,16 @@
 from django.contrib import admin
+
 from .models import (
-    User,
-    Strain,
-    Subject,
-    Protocol,
+    Dataset,
     Experiment,
     File,
-    Software,
+    Protocol,
     Reference,
+    Software,
+    Species,
+    Strain,
+    Subject,
+    User,
 )
 
 
@@ -74,6 +77,7 @@ class FileAdmin(admin.ModelAdmin):
         "link",
         "doi",
         "is_valid_link",
+        "species",
     )
     search_fields = (
         "name",
@@ -81,6 +85,7 @@ class FileAdmin(admin.ModelAdmin):
         "doi",
         "experiment__name",
         "subject__name",
+        "species__name",
     )
     list_filter = ("is_valid_link", "experiment", "subject")
 
@@ -118,6 +123,29 @@ class ReferenceAdmin(admin.ModelAdmin):
     )
 
 
+class DatasetAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "description",
+        "link",
+        "doi",
+        "metadata",
+        "species",
+    )
+    search_fields = (
+        "name",
+        "description",
+        "link",
+        "doi",
+        "species__name",
+    )
+
+
+class SpeciesAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    search_fields = ("name",)
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Strain, StrainAdmin)
 admin.site.register(Subject, SubjectAdmin)
@@ -126,3 +154,5 @@ admin.site.register(Experiment, ExperimentAdmin)
 admin.site.register(File, FileAdmin)
 admin.site.register(Software, SoftwareAdmin)
 admin.site.register(Reference, ReferenceAdmin)
+admin.site.register(Dataset, DatasetAdmin)
+admin.site.register(Species, SpeciesAdmin)

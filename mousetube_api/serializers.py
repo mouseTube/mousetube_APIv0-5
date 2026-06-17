@@ -8,23 +8,32 @@
 # Code under GPL v3.0 licence
 
 
+from rest_framework import serializers
+
 from mousetube_api.models import (
-    User,
-    Strain,
-    Subject,
-    Protocol,
+    Dataset,
     Experiment,
     File,
     PageView,
-    Software,
+    Protocol,
     Reference,
+    Software,
+    Species,
+    Strain,
+    Subject,
+    User,
 )
-from rest_framework import serializers
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
+        fields = "__all__"
+
+
+class SpeciesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Species
         fields = "__all__"
 
 
@@ -62,6 +71,7 @@ class ExperimentSerializer(serializers.ModelSerializer):
 class FileSerializer(serializers.ModelSerializer):
     experiment = ExperimentSerializer(read_only=True)
     subject = SubjectSerializer(read_only=True)
+    species = SpeciesSerializer(read_only=True)
 
     class Meta:
         model = File
@@ -91,3 +101,22 @@ class PageViewSerializer(serializers.ModelSerializer):
 
 class TrackPageSerializer(serializers.Serializer):
     path = serializers.CharField(max_length=255)
+
+
+class DatasetSerializer(serializers.ModelSerializer):
+    species = SpeciesSerializer(read_only=True)
+    files = FileSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Dataset
+        fields = [
+            "id",
+            "name",
+            "files",
+            "description",
+            "link",
+            "doi",
+            "metadata",
+            "species",
+            "downloads",
+        ]
