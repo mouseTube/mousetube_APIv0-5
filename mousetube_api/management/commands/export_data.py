@@ -1,7 +1,9 @@
+import json
+
 from django.core.management.base import BaseCommand
 from django.core.serializers import serialize
-import json
-from mousetube_api.models import Strain, Subject, Protocol, Experiment, File, User
+
+from mousetube_api.models import Experiment, File, Protocol, Strain, Subject, User
 
 
 class Command(BaseCommand):

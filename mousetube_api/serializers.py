@@ -8,21 +8,21 @@
 # Code under GPL v3.0 licence
 
 
+from rest_framework import serializers
+
 from mousetube_api.models import (
-    User,
-    Strain,
-    Subject,
-    Protocol,
+    Dataset,
     Experiment,
     File,
     PageView,
-    Software,
+    Protocol,
     Reference,
-    Dataset,
+    Software,
     Species,
+    Strain,
+    Subject,
+    User,
 )
-
-from rest_framework import serializers
 
 
 class UserSerializer(serializers.ModelSerializer):

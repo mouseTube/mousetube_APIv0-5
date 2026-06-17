@@ -7,42 +7,43 @@
 # PHENOMIN, CNRS UMR7104, INSERM U964, Université de Strasbourg
 # Code under GPL v3.0 licence
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
+import os
+
+from django.conf import settings
+from django.core.cache import cache
+from django.core.management import call_command
+from django.db.models import F, Q
+from django.shortcuts import render
+from django.utils.timezone import now
+from drf_spectacular.utils import OpenApiParameter, extend_schema
+from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
-from .serializers import (
-    UserSerializer,
-    StrainSerializer,
-    SubjectSerializer,
-    ProtocolSerializer,
-    ExperimentSerializer,
-    FileSerializer,
-    PageViewSerializer,
-    TrackPageSerializer,
-    SoftwareSerializer,
-    DatasetSerializer,
-)
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .models import (
-    User,
-    Strain,
-    Subject,
-    Protocol,
+    Dataset,
     Experiment,
     File,
     PageView,
+    Protocol,
     Software,
-    Dataset,
+    Strain,
+    Subject,
+    User,
 )
-from django.db.models import Q
-from rest_framework import status
-from django.utils.timezone import now
-from django.db.models import F
-from django.core.cache import cache
-from django.core.management import call_command
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-from django.shortcuts import render
-from django.conf import settings
-import os
+from .serializers import (
+    DatasetSerializer,
+    ExperimentSerializer,
+    FileSerializer,
+    PageViewSerializer,
+    ProtocolSerializer,
+    SoftwareSerializer,
+    StrainSerializer,
+    SubjectSerializer,
+    TrackPageSerializer,
+    UserSerializer,
+)
 
 
 class FilePagination(PageNumberPagination):

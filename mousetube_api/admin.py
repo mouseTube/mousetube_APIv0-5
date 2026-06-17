@@ -1,15 +1,16 @@
 from django.contrib import admin
+
 from .models import (
-    User,
-    Strain,
-    Subject,
-    Protocol,
+    Dataset,
     Experiment,
     File,
-    Software,
+    Protocol,
     Reference,
-    Dataset,
+    Software,
     Species,
+    Strain,
+    Subject,
+    User,
 )
 
 

@@ -376,7 +376,7 @@ class Dataset(models.Model):
     """
 
     name = models.CharField(max_length=255)
-    files = models.ManyToManyField(File, related_name="files", blank=True, null=True)
+    files = models.ManyToManyField(File, related_name="files", blank=True)
     metadata = models.JSONField(default=dict)
     description = models.TextField(default="")
     link = models.CharField(max_length=255, blank=True, null=True)
