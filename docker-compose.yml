@@ -43,5 +43,22 @@ services:
       - ../mousetube_frontendv0-5/.env
     user: "${UID:-1000}:${GID:-1000}"
 
+  nginx:
+    build:
+      context: ./nginx
+    volumes:
+      - ./staticfiles:/app/staticfiles
+      - ./media:/app/media
+      - ./logs/nginx:/var/log/nginx
+    ports:
+      - "8080:80"   # HTTP local
+      - "8443:443"  # HTTPS local si nécessaire
+    depends_on:
+      - frontend
+      - web
+    environment:
+      DOMAIN: localhost
+    restart: always
+
 volumes:
   mariadb_data:
