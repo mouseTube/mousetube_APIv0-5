@@ -28,7 +28,6 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (
     DatasetAPIView,
-    DatasetDetailAPIView,
     ExperimentAPIView,
     FileAPIView,
     FileDetailAPIView,
@@ -51,9 +50,6 @@ urlpatterns = [
     path("api/experiment/", ExperimentAPIView.as_view()),
     path("api/software/", SoftwareAPIView.as_view()),
     path("api/dataset/", DatasetAPIView.as_view()),
-    path(
-        "api/dataset/<int:pk>/", DatasetDetailAPIView.as_view(), name="dataset-detail"
-    ),
     path("api/file/", FileAPIView.as_view(), name="file-list"),
     path("api/file/<int:pk>/", FileDetailAPIView.as_view(), name="file-detail"),
     path("api/track-page/", TrackPageView.as_view(), name="track-page"),

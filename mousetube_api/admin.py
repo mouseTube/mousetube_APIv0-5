@@ -127,16 +127,12 @@ class DatasetAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "description",
-        "link",
-        "doi",
         "metadata",
         "species",
     )
     search_fields = (
         "name",
         "description",
-        "link",
-        "doi",
         "species__name",
     )
 

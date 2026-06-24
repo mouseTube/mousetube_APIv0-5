@@ -379,12 +379,9 @@ class Dataset(models.Model):
     files = models.ManyToManyField(File, related_name="files", blank=True)
     metadata = models.JSONField(default=dict)
     description = models.TextField(default="")
-    link = models.CharField(max_length=255, blank=True, null=True)
-    doi = models.CharField(max_length=255, blank=True, null=True)
     species = models.ForeignKey(
         Species, on_delete=models.SET_DEFAULT, default=get_default_species
     )
-    downloads = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
