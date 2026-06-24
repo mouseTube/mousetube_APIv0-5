@@ -7,6 +7,7 @@ server {
     # Listen only on HTTP (HAProxy terminates HTTPS)
     listen 80;
     server_name ${DOMAIN};
+    client_max_body_size 10M;
 
     proxy_buffer_size       128k;
     proxy_buffers           4 256k;
