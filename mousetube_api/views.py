@@ -416,30 +416,3 @@ class DatasetAPIView(APIView):
         paginated_datasets = paginator.paginate_queryset(datasets, request)
         serializer = self.serializer_class(paginated_datasets, many=True)
         return paginator.get_paginated_response(serializer.data)
-
-
-class DatasetDetailAPIView(APIView):
-    @extend_schema(exclude=True)
-    def patch(self, request, *args, **kwargs):
-        try:
-            dataset = Dataset.objects.get(pk=kwargs["pk"])
-        except Dataset.DoesNotExist:
-            return Response(
-                {"detail": "Dataset not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        # if "downloads" in request.data and request.data["downloads"] == "increment":
-        #     updated = Dataset.objects.filter(pk=kwargs["pk"]).update(
-        #         downloads=F("downloads") + 1
-        #     )
-        #     if updated == 0:
-        #         return Response(
-        #             {"detail": "Dataset not found or update failed"},
-        #             status=status.HTTP_400_BAD_REQUEST,
-        #         )
-        #     dataset.refresh_from_db()
-        #     return Response({"downloads": dataset.downloads}, status=status.HTTP_200_OK)
-        #
-        # return Response(
-        #     {"detail": "Invalid request body"}, status=status.HTTP_400_BAD_REQUEST
-        # )
