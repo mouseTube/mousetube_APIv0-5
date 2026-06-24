@@ -399,14 +399,14 @@ class DatasetAPIView(APIView):
         dataset = Dataset.objects.all()
 
         if search_query:
-            dataset_fields = ["name", "description", "link", "doi"]
+            dataset_fields = ["name", "species", "description"]
 
             # Build Q objects
             dataset_query = Q()
             for field in dataset_fields:
                 dataset_query |= Q(**{f"{field}__icontains": search_query})
 
-        ALLOWED_FILTERS = ["acquisition", "analysis", "acquisition and analysis"]
+        ALLOWED_FILTERS = ["name", "species", "description"]
 
         if filter_query and filter_query in ALLOWED_FILTERS:
             dataset = dataset.filter(type=filter_query)
@@ -428,18 +428,18 @@ class DatasetDetailAPIView(APIView):
                 {"detail": "Dataset not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
-        if "downloads" in request.data and request.data["downloads"] == "increment":
-            updated = Dataset.objects.filter(pk=kwargs["pk"]).update(
-                downloads=F("downloads") + 1
-            )
-            if updated == 0:
-                return Response(
-                    {"detail": "Dataset not found or update failed"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            dataset.refresh_from_db()
-            return Response({"downloads": dataset.downloads}, status=status.HTTP_200_OK)
-
-        return Response(
-            {"detail": "Invalid request body"}, status=status.HTTP_400_BAD_REQUEST
-        )
+        # if "downloads" in request.data and request.data["downloads"] == "increment":
+        #     updated = Dataset.objects.filter(pk=kwargs["pk"]).update(
+        #         downloads=F("downloads") + 1
+        #     )
+        #     if updated == 0:
+        #         return Response(
+        #             {"detail": "Dataset not found or update failed"},
+        #             status=status.HTTP_400_BAD_REQUEST,
+        #         )
+        #     dataset.refresh_from_db()
+        #     return Response({"downloads": dataset.downloads}, status=status.HTTP_200_OK)
+        #
+        # return Response(
+        #     {"detail": "Invalid request body"}, status=status.HTTP_400_BAD_REQUEST
+        # )

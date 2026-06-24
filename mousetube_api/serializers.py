@@ -114,9 +114,6 @@ class DatasetSerializer(serializers.ModelSerializer):
             "name",
             "files",
             "description",
-            "link",
-            "doi",
             "metadata",
             "species",
-            "downloads",
         ]
