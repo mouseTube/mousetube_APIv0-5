@@ -107,7 +107,8 @@ class Subject(models.Model):
         user (User): The user associated with the subject.
     """
 
-    SEX_CHOICES = [
+    SEX_CHOICES = \
+        [
             ("male", "Male"),
             ("female", "Female"),
         ]
