@@ -107,11 +107,10 @@ class Subject(models.Model):
         user (User): The user associated with the subject.
     """
 
-    SEX_CHOICES = \
-        [
-            ("male", "Male"),
-            ("female", "Female"),
-        ]
+    SEX_CHOICES = [
+        ("male", "Male"),
+        ("female", "Female"),
+    ]
 
     name = models.CharField(max_length=255, unique=True)
     strain = models.ForeignKey(Strain, on_delete=models.CASCADE)

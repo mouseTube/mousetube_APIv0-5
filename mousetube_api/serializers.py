@@ -109,12 +109,11 @@ class DatasetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Dataset
-        fields = \
-            [
-                "id",
-                "name",
-                "files",
-                "description",
-                "metadata",
-                "species",
-            ]
+        fields = [
+            "id",
+            "name",
+            "files",
+            "description",
+            "metadata",
+            "species",
+        ]
