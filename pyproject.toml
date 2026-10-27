@@ -18,7 +18,7 @@ dependencies = [
     "mysqlclient==2.3.0",
     "django-environ==0.13.0",
     "drf-spectacular==0.30.0",
-    "pillow==12.3.0",
+    "pillow==13.0.0",
     "uvicorn==0.54.0",
     "gunicorn==26.2.0",
     "mkdocs-material>=8.0",
