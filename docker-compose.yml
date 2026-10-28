@@ -41,6 +41,8 @@ services:
       - web
     env_file:
       - ../mousetube_frontendv0-5/.env
+    environment:
+      NPM_CONFIG_CACHE: /app/.npm
     user: "${UID:-1000}:${GID:-1000}"
 
   nginx:
